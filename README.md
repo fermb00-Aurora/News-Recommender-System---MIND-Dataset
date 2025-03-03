@@ -1,6 +1,6 @@
 # SokoMind News Recommender System - MIND
 
-Welcome to the Sokovia News Recommender System project! This project aims to deliver personalized news article recommendations to users, enhancing their engagement and satisfaction while exploring the Sokovia News platform. By implementing recommender models, we can provide accurate and diverse recommendations based on user preferences and article characteristics.
+Welcome to the SokoMind News Recommender System project! This project aims to deliver personalized news article recommendations to users, enhancing their engagement and satisfaction while exploring the Sokovia News platform. By implementing recommender models, we can provide accurate and diverse recommendations based on user preferences and article characteristics.
 
 ## Table of Contents
 1. [Introduction](#introduction)
