@@ -13,9 +13,9 @@ st.markdown("""
     <style>
         /* Overall Dark Background */
         body {
-            background-color: #2E2E2E !important;  /* Main background */
+            background-color: #2E2E2E !important;
             font-family: 'Segoe UI', Arial, sans-serif;
-            color: #EAEAEA; /* Base text color */
+            color: #EAEAEA;
         }
         .stApp {
             max-width: 1200px;
@@ -159,7 +159,7 @@ st.markdown("""
 st.markdown('<div class="header-container">', unsafe_allow_html=True)
 col1, col2 = st.columns([1, 5])
 with col1:
-    # Directly load the logo from the same directory
+    # Ensure logo.png is in the same folder as this app.py
     st.image("logo.png", width=80)
 with col2:
     st.markdown('<h1 class="main-title">SokoNews</h1>', unsafe_allow_html=True)
@@ -173,15 +173,15 @@ with col1:
     st.markdown('<p class="control-label">User Profile</p>', unsafe_allow_html=True)
     user_profiles = ["Tech Enthusiast", "Sports Fan", "Political Enthusiast", "Movie Buff"]
     selected_profile = st.selectbox(
-        "Select a profile",  # Provide a label for accessibility
+        "Select a profile",  # Non-empty label for accessibility
         user_profiles,
-        label_visibility="collapsed",  # Hide the label visually but keep it non-empty
+        label_visibility="collapsed",
         help="Choose a profile to personalize your recommendations."
     )
 with col2:
     st.markdown('<p class="control-label">Number of Recommendations</p>', unsafe_allow_html=True)
     num_recommendations = st.slider(
-        "Number of Recommendations",  # Provide a label for accessibility
+        "Number of Recommendations",  # Non-empty label for accessibility
         1, 20, 5,
         label_visibility="collapsed",
         help="Adjust how many news articles you wish to see."
@@ -189,9 +189,7 @@ with col2:
 with col3:
     st.markdown('<p class="control-label">Refresh</p>', unsafe_allow_html=True)
     if st.button("Refresh"):
-        # Pressing a Streamlit button automatically triggers a rerun,
-        # so we don't need st.experimental_rerun().
-        st.info("Page refreshed!")
+        st.info("Page refreshed!")  # Button click triggers a rerun automatically
 
 st.markdown('</div>', unsafe_allow_html=True)
 
