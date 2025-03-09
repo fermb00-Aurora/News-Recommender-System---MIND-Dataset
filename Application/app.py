@@ -1,4 +1,20 @@
 import streamlit as st
+import base64
+
+def get_base64_image(image_path):
+    with open(image_path, "rb") as img_file:
+        return base64.b64encode(img_file.read()).decode()
+
+# Convert your logo.jpg to a Base64 string
+logo_base64 = get_base64_image("logo.jpg")
+
+# Create a small HTML block with absolute positioning in the top-right corner
+# IMPORTANT: use data:image/jpeg;base64 if your file is a JPG
+st.markdown(f"""
+    <div style="position: absolute; top: 10px; right: 10px; z-index: 1000;">
+        <img src="data:image/jpeg;base64,{logo_base64}" width="100">
+    </div>
+""", unsafe_allow_html=True)
 
 # Set page configuration
 st.set_page_config(
@@ -147,13 +163,6 @@ st.markdown("""
             text-decoration: underline;
         }
     </style>
-""", unsafe_allow_html=True)
-
-# Add a Microsoft logo at the top right corner
-st.markdown(f"""
-    <div style="position: absolute; top: 10px; right: 10px; z-index: 1000;">
-        <img src="data:image/png;base64,{logo_base64}" width="100">
-    </div>
 """, unsafe_allow_html=True)
 
 # Title and Subtitle (centered under the logo)
