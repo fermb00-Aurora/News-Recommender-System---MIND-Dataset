@@ -157,7 +157,7 @@ st.markdown('<div class="header-container">', unsafe_allow_html=True)
 col1, col2 = st.columns([1, 5])
 with col1:
     try:
-        st.image("logo.png", width=80)
+        st.image("logo.webp", width=80)
     except:
         st.markdown("🖼️")
 with col2:
