@@ -155,21 +155,17 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Header with logo and title
+# Header with title only
 st.markdown('<div class="header-container">', unsafe_allow_html=True)
 col1, col2 = st.columns([1, 5])
 with col1:
-    # Show your main logo (if needed)
-    st.image("microsoft.png", width=10)
+    # Optionally, you could remove this column or leave it empty.
+    pass
 with col2:
-    # Display the Microsoft logo next to the title using inline HTML
-    st.markdown('''
-        <h1 class="main-title">
-            <img src="microsoft.png" style="vertical-align: middle;" width="30"> SokoNews
-        </h1>
-    ''', unsafe_allow_html=True)
+    st.markdown('<h1 class="main-title">SokoNews</h1>', unsafe_allow_html=True)
     st.markdown('<p class="subtitle">Discover personalized news recommendations using Microsoft technology</p>', unsafe_allow_html=True)
 st.markdown('</div>', unsafe_allow_html=True)
+
 
 # Control Section for user profile & number of recommendations
 st.markdown('<div class="control-section">', unsafe_allow_html=True)
