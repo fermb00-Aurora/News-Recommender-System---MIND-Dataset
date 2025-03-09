@@ -159,10 +159,15 @@ st.markdown("""
 st.markdown('<div class="header-container">', unsafe_allow_html=True)
 col1, col2 = st.columns([1, 5])
 with col1:
-    # Ensure logo.png is in the same folder as this app.py
+    # Show your main logo (if needed)
     st.image("logo.png", width=10)
 with col2:
-    st.markdown('<h1 class="main-title">SokoNews</h1>', unsafe_allow_html=True)
+    # Display the Microsoft logo next to the title using inline HTML
+    st.markdown('''
+        <h1 class="main-title">
+            <img src="microsoft.png" style="vertical-align: middle;" width="30"> SokoNews
+        </h1>
+    ''', unsafe_allow_html=True)
     st.markdown('<p class="subtitle">Discover personalized news recommendations using Microsoft technology</p>', unsafe_allow_html=True)
 st.markdown('</div>', unsafe_allow_html=True)
 
