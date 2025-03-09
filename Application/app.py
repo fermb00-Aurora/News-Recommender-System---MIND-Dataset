@@ -155,16 +155,13 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Header with title only
+# Header with title only (removing the logo column)
 st.markdown('<div class="header-container">', unsafe_allow_html=True)
-col1, col2 = st.columns([1, 5])
-with col1:
-    # Optionally, you could remove this column or leave it empty.
-    pass
-with col2:
-    st.markdown('<h1 class="main-title">SokoNews</h1>', unsafe_allow_html=True)
-    st.markdown('<p class="subtitle">Discover personalized news recommendations using Microsoft technology</p>', unsafe_allow_html=True)
+# Directly display the title and subtitle without using columns
+st.markdown('<h1 class="main-title">SokoNews</h1>', unsafe_allow_html=True)
+st.markdown('<p class="subtitle">Discover personalized news recommendations using Microsoft technology</p>', unsafe_allow_html=True)
 st.markdown('</div>', unsafe_allow_html=True)
+
 
 
 # Control Section for user profile & number of recommendations
