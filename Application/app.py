@@ -8,7 +8,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Apply custom CSS for a more readable dark theme
+# Apply custom CSS for a readable dark theme
 st.markdown("""
     <style>
         /* Overall Dark Background */
@@ -159,7 +159,7 @@ st.markdown("""
 st.markdown('<div class="header-container">', unsafe_allow_html=True)
 col1, col2 = st.columns([1, 5])
 with col1:
-    # Directly load the logo from the same directory
+    # Make sure "logo.png" is in the same folder as this app.py
     st.image("logo.png", width=80)
 with col2:
     st.markdown('<h1 class="main-title">SokoNews</h1>', unsafe_allow_html=True)
@@ -172,14 +172,27 @@ col1, col2, col3 = st.columns([2, 2, 1])
 with col1:
     st.markdown('<p class="control-label">User Profile</p>', unsafe_allow_html=True)
     user_profiles = ["Tech Enthusiast", "Sports Fan", "Political Enthusiast", "Movie Buff"]
-    selected_profile = st.selectbox("", user_profiles, help="Choose a profile to personalize your recommendations.")
+    selected_profile = st.selectbox(
+        "Select a profile",  # Provide a label for accessibility
+        user_profiles,
+        label_visibility="collapsed",  # Hide the label visually but keep it non-empty
+        help="Choose a profile to personalize your recommendations."
+    )
 with col2:
     st.markdown('<p class="control-label">Number of Recommendations</p>', unsafe_allow_html=True)
-    num_recommendations = st.slider("", 1, 20, 5, help="Adjust how many news articles you wish to see.")
+    num_recommendations = st.slider(
+        "Number of Recommendations",  # Provide a label for accessibility
+        1, 20, 5,
+        label_visibility="collapsed",
+        help="Adjust how many news articles you wish to see."
+    )
 with col3:
     st.markdown('<p class="control-label">Refresh</p>', unsafe_allow_html=True)
     if st.button("Refresh"):
-        st.experimental_rerun()
+        # Pressing a Streamlit button automatically triggers a rerun,
+        # so we don't need st.experimental_rerun().
+        st.info("Page refreshed!")
+
 st.markdown('</div>', unsafe_allow_html=True)
 
 # Dummy data for recommendations
@@ -307,6 +320,6 @@ with tab3:
 st.markdown("""
     <div class="footer">
         <p>© 2025 SokoNews - Developed for Microsoft Capstone Project</p>
-        <p>Explore the MIND dataset <a href="https://msnews.github.io/" target="_blank">here</a>.</p>
+        <p>Explore the MIND dataset <a href="https://www.kaggle.com/datasets/arashnic/mind-news-dataset" target="_blank">here</a>.</p>
     </div>
 """, unsafe_allow_html=True)
