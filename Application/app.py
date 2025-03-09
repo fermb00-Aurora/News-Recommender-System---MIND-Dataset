@@ -150,9 +150,9 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Add a Microsoft logo at the top right corner
-st.markdown("""
-    <div class="top-right-logo">
-        <img src="logo.jpg" width="100">
+st.markdown(f"""
+    <div style="position: absolute; top: 10px; right: 10px; z-index: 1000;">
+        <img src="data:image/png;base64,{logo_base64}" width="100">
     </div>
 """, unsafe_allow_html=True)
 
