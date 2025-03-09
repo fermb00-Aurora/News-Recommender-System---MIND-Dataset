@@ -22,6 +22,13 @@ st.markdown("""
             margin: 0 auto;
             padding: 20px;
         }
+        /* Top-right Logo */
+        .top-right-logo {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+        }
         /* Title and Subtitle */
         .main-title {
             color: #0078D4;
@@ -142,11 +149,18 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Title and Subtitle
+# Add a Microsoft logo at the top right corner
+st.markdown("""
+    <div class="top-right-logo">
+        <img src="logo.jpg" width="100">
+    </div>
+""", unsafe_allow_html=True)
+
+# Title and Subtitle (centered under the logo)
 st.markdown('<h1 class="main-title">SokoNews 🚀</h1>', unsafe_allow_html=True)
 st.markdown('<p class="subtitle">Discover personalized news recommendations using Microsoft technology ✨</p>', unsafe_allow_html=True)
 
-# Control Section for user profile and number of recommendations
+# Control Section for user profile & number of recommendations
 st.markdown('<div class="control-section">', unsafe_allow_html=True)
 col1, col2, col3 = st.columns([2, 2, 1])
 with col1:
@@ -169,10 +183,10 @@ with col2:
 with col3:
     st.markdown('<p class="control-label">Refresh</p>', unsafe_allow_html=True)
     if st.button("Refresh"):
-        st.info("Page refreshed!")  # A simple refresh message; button press triggers a rerun automatically
+        st.info("Page refreshed!")  # Button click triggers a rerun automatically
 st.markdown('</div>', unsafe_allow_html=True)
 
-# More extensive dummy data for recommendations
+# Extended dummy data for recommendations
 collab_recommendations = {
     "Tech Enthusiast 💻": [
         ("AI Revolutionizes the World 🤖", "A breakthrough in artificial intelligence is changing how we interact with technology."),
