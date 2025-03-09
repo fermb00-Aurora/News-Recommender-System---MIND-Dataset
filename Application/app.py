@@ -318,6 +318,6 @@ with tab3:
 st.markdown("""
     <div class="footer">
         <p>© 2025 SokoNews - Developed for Microsoft Capstone Project</p>
-        <p>Explore the MIND dataset <a href="https://www.kaggle.com/datasets/arashnic/mind-news-dataset" target="_blank">here</a>.</p>
+        <p>Explore the MIND dataset <a href="https://msnews.github.io/" target="_blank">here</a>.</p>
     </div>
 """, unsafe_allow_html=True)
