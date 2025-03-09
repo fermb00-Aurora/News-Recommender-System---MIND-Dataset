@@ -1,5 +1,6 @@
 import streamlit as st
 
+# Set page configuration
 st.set_page_config(
     page_title="SokoNews - News Recommender",
     page_icon="📰",
@@ -7,13 +8,14 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+# Apply custom CSS for a more readable dark theme
 st.markdown("""
     <style>
-        /* General Style for Dark Theme */
+        /* Overall Dark Background */
         body {
-            background-color: #121212 !important;
+            background-color: #2E2E2E !important;  /* Main background */
             font-family: 'Segoe UI', Arial, sans-serif;
-            color: #E0E0E0;
+            color: #EAEAEA; /* Base text color */
         }
         .stApp {
             max-width: 1200px;
@@ -21,7 +23,7 @@ st.markdown("""
             padding: 20px;
         }
         
-        /* Header */
+        /* Header Section */
         .header-container {
             display: flex;
             align-items: center;
@@ -36,7 +38,7 @@ st.markdown("""
             margin: 0;
         }
         .subtitle {
-            color: #B0B0B0;
+            color: #CCCCCC;
             font-size: 1.1em;
             font-weight: 400;
             margin-top: 5px;
@@ -44,7 +46,7 @@ st.markdown("""
         
         /* Control Section */
         .control-section {
-            background-color: #1E1E1E;
+            background-color: #3A3A3A;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
@@ -53,17 +55,6 @@ st.markdown("""
             gap: 20px;
             align-items: center;
         }
-        .stSelectbox > div > div > div {
-            background-color: #2C2C2C;
-            border: 1px solid #00A4EF;
-            border-radius: 5px;
-            padding: 5px;
-            font-size: 1em;
-            color: #E0E0E0;
-        }
-        .stSlider > div > div > div > div {
-            background-color: #00A4EF;
-        }
         .control-label {
             color: #00A4EF;
             font-size: 1em;
@@ -71,12 +62,25 @@ st.markdown("""
             margin-bottom: 5px;
         }
         
+        /* Streamlit Widgets */
+        .stSelectbox > div > div > div {
+            background-color: #454545;
+            border: 1px solid #00A4EF;
+            border-radius: 5px;
+            padding: 5px;
+            font-size: 1em;
+            color: #EAEAEA;
+        }
+        .stSlider > div > div > div > div {
+            background-color: #00A4EF;
+        }
+        
         /* Tabs */
         .stTabs {
             margin-top: 20px;
         }
         .stTabs [role="tab"] {
-            background-color: #2C2C2C;
+            background-color: #3A3A3A;
             color: #00A4EF;
             border-radius: 10px 10px 0 0;
             padding: 12px 25px;
@@ -85,15 +89,15 @@ st.markdown("""
             transition: background-color 0.3s, color 0.3s;
         }
         .stTabs [role="tab"][aria-selected="true"] {
-            background-color: #1E1E1E;
+            background-color: #2E2E2E;
             color: #FF8C00;
             border-bottom: 3px solid #FF8C00;
         }
         .stTabs [role="tab"]:hover {
-            background-color: #3A3A3A;
+            background-color: #454545;
         }
         .tab-content {
-            background-color: #1E1E1E;
+            background-color: #3A3A3A;
             padding: 25px;
             border-radius: 0 10px 10px 10px;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
@@ -101,7 +105,7 @@ st.markdown("""
         
         /* Article Cards */
         .article-card {
-            background-color: #2C2C2C;
+            background-color: #454545;
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 15px;
@@ -120,12 +124,12 @@ st.markdown("""
             margin-bottom: 8px;
         }
         .article-summary {
-            color: #B0B0B0;
+            color: #CCCCCC;
             font-size: 1em;
             line-height: 1.5;
         }
         .description-text {
-            color: #B0B0B0;
+            color: #CCCCCC;
             font-size: 1em;
             font-style: italic;
             margin-bottom: 25px;
@@ -135,7 +139,7 @@ st.markdown("""
         /* Footer */
         .footer {
             text-align: center;
-            color: #B0B0B0;
+            color: #CCCCCC;
             font-size: 0.9em;
             margin-top: 40px;
             padding: 20px 0;
@@ -155,16 +159,14 @@ st.markdown("""
 st.markdown('<div class="header-container">', unsafe_allow_html=True)
 col1, col2 = st.columns([1, 5])
 with col1:
-    try:
-        st.image("logo.png", width=80)
-    except:
-        st.markdown("🖼️")
+    # Directly load the logo from the same directory
+    st.image("logo.png", width=80)
 with col2:
     st.markdown('<h1 class="main-title">SokoNews</h1>', unsafe_allow_html=True)
     st.markdown('<p class="subtitle">Discover personalized news recommendations using Microsoft technology</p>', unsafe_allow_html=True)
 st.markdown('</div>', unsafe_allow_html=True)
 
-# Control Section for User Profile and Number of Recommendations
+# Control Section for user profile & number of recommendations
 st.markdown('<div class="control-section">', unsafe_allow_html=True)
 col1, col2, col3 = st.columns([2, 2, 1])
 with col1:
@@ -180,7 +182,7 @@ with col3:
         st.experimental_rerun()
 st.markdown('</div>', unsafe_allow_html=True)
 
-# Dummy data for recommendations (to be replaced with real data later)
+# Dummy data for recommendations
 collab_recommendations = {
     "Tech Enthusiast": [
         ("AI Revolutionizes the World", "A breakthrough in artificial intelligence is changing how we interact with technology."),
@@ -247,7 +249,7 @@ def get_recommendations(profile, recommender_type):
         return hybrid_recommendations.get(profile, [])[:num_recommendations]
     return []
 
-# Tabs for each recommendation method
+# Create tabs for each recommendation method
 tab1, tab2, tab3 = st.tabs(["Collaborative Filtering", "Content-Based", "Hybrid"])
 
 with tab1:
@@ -287,7 +289,7 @@ with tab2:
 with tab3:
     st.markdown('<div class="tab-content">', unsafe_allow_html=True)
     st.markdown('<h2 class="section-header">Hybrid</h2>', unsafe_allow_html=True)
-    st.markdown('<p class="description-text">This method combines the strengths of collaborative filtering and content-based approaches to offer you more precise recommendations.</p>', unsafe_allow_html=True)
+    st.markdown('<p class="description-text">This method combines collaborative filtering and content-based approaches to offer more precise recommendations.</p>', unsafe_allow_html=True)
     recommendations = get_recommendations(selected_profile, "Hybrid")
     if recommendations:
         for title, summary in recommendations:
@@ -305,6 +307,6 @@ with tab3:
 st.markdown("""
     <div class="footer">
         <p>© 2025 SokoNews - Developed for Microsoft Capstone Project</p>
-        <p>Explore the MIND dataset <a href="https://www.kaggle.com/datasets/arashnic/mind-news-dataset" target="_blank">here</a>.</p>
+        <p>Explore the MIND dataset <a href="https://msnews.github.io/" target="_blank">here</a>.</p>
     </div>
 """, unsafe_allow_html=True)
