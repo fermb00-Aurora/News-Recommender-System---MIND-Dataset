@@ -1,21 +1,19 @@
 import streamlit as st
 
-# Configuración inicial para un diseño optimizado y profesional
 st.set_page_config(
-    page_title="SokoNews - Recomendador de Noticias",
+    page_title="SokoNews - News Recommender",
     page_icon="📰",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# Estilo global con CSS avanzado para un diseño inspirado en Microsoft Fluent Design
 st.markdown("""
     <style>
-        /* Estilo general */
+        /* General Style for Dark Theme */
         body {
-            background-color: #f5f5f5 !important;
+            background-color: #121212 !important;
             font-family: 'Segoe UI', Arial, sans-serif;
-            color: #2e2e2e;
+            color: #E0E0E0;
         }
         .stApp {
             max-width: 1200px;
@@ -23,7 +21,7 @@ st.markdown("""
             padding: 20px;
         }
         
-        /* Encabezado */
+        /* Header */
         .header-container {
             display: flex;
             align-items: center;
@@ -38,29 +36,30 @@ st.markdown("""
             margin: 0;
         }
         .subtitle {
-            color: #737373;
+            color: #B0B0B0;
             font-size: 1.1em;
             font-weight: 400;
             margin-top: 5px;
         }
-
-        /* Sección de controles */
+        
+        /* Control Section */
         .control-section {
-            background-color: #ffffff;
+            background-color: #1E1E1E;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
             margin: 20px 0;
             display: flex;
             gap: 20px;
             align-items: center;
         }
         .stSelectbox > div > div > div {
-            background-color: #f9f9f9;
+            background-color: #2C2C2C;
             border: 1px solid #00A4EF;
             border-radius: 5px;
             padding: 5px;
             font-size: 1em;
+            color: #E0E0E0;
         }
         .stSlider > div > div > div > div {
             background-color: #00A4EF;
@@ -71,13 +70,13 @@ st.markdown("""
             font-weight: 500;
             margin-bottom: 5px;
         }
-
-        /* Pestañas */
+        
+        /* Tabs */
         .stTabs {
             margin-top: 20px;
         }
         .stTabs [role="tab"] {
-            background-color: #e6f7ff;
+            background-color: #2C2C2C;
             color: #00A4EF;
             border-radius: 10px 10px 0 0;
             padding: 12px 25px;
@@ -86,33 +85,33 @@ st.markdown("""
             transition: background-color 0.3s, color 0.3s;
         }
         .stTabs [role="tab"][aria-selected="true"] {
-            background-color: #ffffff;
-            color: #F25022;
-            border-bottom: 3px solid #F25022;
+            background-color: #1E1E1E;
+            color: #FF8C00;
+            border-bottom: 3px solid #FF8C00;
         }
         .stTabs [role="tab"]:hover {
-            background-color: #d0eaff;
+            background-color: #3A3A3A;
         }
         .tab-content {
-            background-color: #ffffff;
+            background-color: #1E1E1E;
             padding: 25px;
             border-radius: 0 10px 10px 10px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
         }
-
-        /* Tarjetas de artículos */
+        
+        /* Article Cards */
         .article-card {
-            background-color: #e6f7ff;
+            background-color: #2C2C2C;
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 15px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
             transition: transform 0.2s, box-shadow 0.2s;
             border-left: 4px solid #00A4EF;
         }
         .article-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
         }
         .article-title {
             color: #00A4EF;
@@ -121,22 +120,22 @@ st.markdown("""
             margin-bottom: 8px;
         }
         .article-summary {
-            color: #737373;
+            color: #B0B0B0;
             font-size: 1em;
             line-height: 1.5;
         }
         .description-text {
-            color: #737373;
+            color: #B0B0B0;
             font-size: 1em;
             font-style: italic;
             margin-bottom: 25px;
             line-height: 1.6;
         }
-
+        
         /* Footer */
         .footer {
             text-align: center;
-            color: #737373;
+            color: #B0B0B0;
             font-size: 0.9em;
             margin-top: 40px;
             padding: 20px 0;
@@ -152,7 +151,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Encabezado con logo y título
+# Header with logo and title
 st.markdown('<div class="header-container">', unsafe_allow_html=True)
 col1, col2 = st.columns([1, 5])
 with col1:
@@ -162,255 +161,150 @@ with col1:
         st.markdown("🖼️")
 with col2:
     st.markdown('<h1 class="main-title">SokoNews</h1>', unsafe_allow_html=True)
-    st.markdown('<p class="subtitle">Descubre noticias personalizadas con tecnología de Microsoft</p>', unsafe_allow_html=True)
+    st.markdown('<p class="subtitle">Discover personalized news recommendations using Microsoft technology</p>', unsafe_allow_html=True)
 st.markdown('</div>', unsafe_allow_html=True)
 
-# Sección de controles para selección de perfil y número de recomendaciones
+# Control Section for User Profile and Number of Recommendations
 st.markdown('<div class="control-section">', unsafe_allow_html=True)
 col1, col2, col3 = st.columns([2, 2, 1])
 with col1:
-    st.markdown('<p class="control-label">👤 Perfil de usuario</p>', unsafe_allow_html=True)
-    user_profiles = ["Amante de la tecnología", "Fanático del deporte", "Entusiasta de política", "Aficionado al cine"]
-    selected_profile = st.selectbox("", user_profiles, help="Elige un perfil para personalizar tus recomendaciones.")
+    st.markdown('<p class="control-label">User Profile</p>', unsafe_allow_html=True)
+    user_profiles = ["Tech Enthusiast", "Sports Fan", "Political Enthusiast", "Movie Buff"]
+    selected_profile = st.selectbox("", user_profiles, help="Choose a profile to personalize your recommendations.")
 with col2:
-    st.markdown('<p class="control-label">📏 Número de recomendaciones</p>', unsafe_allow_html=True)
-    num_recommendations = st.slider("", 1, 20, 5, help="Ajusta cuántas noticias deseas ver.")
+    st.markdown('<p class="control-label">Number of Recommendations</p>', unsafe_allow_html=True)
+    num_recommendations = st.slider("", 1, 20, 5, help="Adjust how many news articles you wish to see.")
 with col3:
-    st.markdown('<p class="control-label">🔄 Actualizar</p>', unsafe_allow_html=True)
-    if st.button("Refrescar"):
+    st.markdown('<p class="control-label">Refresh</p>', unsafe_allow_html=True)
+    if st.button("Refresh"):
         st.experimental_rerun()
 st.markdown('</div>', unsafe_allow_html=True)
 
-# Datos dummy para las recomendaciones (serán reemplazados por datos reales más adelante)
+# Dummy data for recommendations (to be replaced with real data later)
 collab_recommendations = {
-    "Amante de la tecnología": [
-        ("La IA revoluciona el mundo", "Un nuevo avance en inteligencia artificial está cambiando cómo interactuamos con la tecnología diaria."),
-        ("El futuro de los smartphones", "Innovaciones que cambiarán el mercado móvil en 2025 y más allá."),
-        ("5G y más allá", "Cómo la tecnología 5G está transformando las comunicaciones globales."),
-        ("El auge de la realidad virtual", "Nuevos dispositivos VR que están llevando la inmersión al siguiente nivel."),
-        ("Ciberseguridad en 2025", "Tendencias y amenazas emergentes que debes conocer para proteger tus datos."),
-        ("El impacto de la nube", "Cómo la nube está transformando las empresas modernas."),
-        ("Avances en robótica", "Robots que cambiarán nuestras vidas en la próxima década."),
-        ("El futuro del trabajo remoto", "Tecnologías que están redefiniendo el teletrabajo."),
-        ("Blockchain más allá de las criptos", "Aplicaciones innovadoras que están revolucionando industrias."),
-        ("Seguridad en IoT", "Cómo proteger tus dispositivos conectados en un mundo hiperconectado."),
+    "Tech Enthusiast": [
+        ("AI Revolutionizes the World", "A breakthrough in artificial intelligence is changing how we interact with technology."),
+        ("The Future of Smartphones", "Innovations set to transform the mobile market in 2025 and beyond."),
     ],
-    "Fanático del deporte": [
-        ("Final de la Champions 2025", "Resumen del partido de la década con momentos clave y análisis."),
-        ("Atletas que rompen récords", "Historias inspiradoras de deportistas que están haciendo historia en 2025."),
-        ("NBA: Lo que viene", "Predicciones para la temporada 2025-2026 y jugadores a seguir."),
-        ("El regreso de las Olimpiadas", "Preparativos para el próximo evento mundial que no te puedes perder."),
-        ("Fútbol y tecnología", "Cómo la IA está cambiando las estrategias y el análisis del juego."),
-        ("Entrenamiento con tecnología", "Gadgets que están ayudando a los atletas a mejorar su rendimiento."),
-        ("Lesiones deportivas: Prevención", "Consejos prácticos para evitar lesiones comunes en deportistas."),
-        ("Fórmula 1: Temporada 2025", "Lo que viene en el automovilismo y los equipos favoritos."),
-        ("Deportes extremos", "Nuevas tendencias y destinos para los amantes de la adrenalina."),
-        ("Historias de superación", "Atletas que vencieron la adversidad para alcanzar la gloria."),
+    "Sports Fan": [
+        ("Champions League Final 2025", "A recap of the match of the decade with key moments and analysis."),
+        ("Record-Breaking Athletes", "Inspiring stories of athletes making history in 2025."),
     ],
-    "Entusiasta de política": [
-        ("Elecciones 2025: Lo que debes saber", "Un análisis profundo de los candidatos y sus propuestas clave."),
-        ("Políticas climáticas globales", "Nuevas medidas para combatir el cambio climático a nivel internacional."),
-        ("Tensiones geopolíticas", "Lo último en relaciones internacionales y conflictos emergentes."),
-        ("Reformas económicas", "Impacto de las nuevas leyes fiscales en la economía global."),
-        ("Derechos humanos en foco", "Avances y desafíos actuales en la lucha por los derechos humanos."),
-        ("La política en la era digital", "Cómo las redes sociales están influyendo en las decisiones políticas."),
-        ("Cambio climático y acción política", "Decisiones clave que están moldeando el futuro del planeta."),
-        ("El futuro de la democracia", "Tendencias globales que están redefiniendo los sistemas democráticos."),
-        ("Economía post-pandemia", "Lecciones aprendidas y nuevas estrategias económicas."),
-        ("Liderazgo femenino", "Mujeres que están cambiando el panorama político mundial."),
+    "Political Enthusiast": [
+        ("Elections 2025: What You Need to Know", "An in-depth analysis of the candidates and their key proposals."),
+        ("Global Climate Policies", "New measures to tackle climate change on an international scale."),
     ],
-    "Aficionado al cine": [
-        ("Estrenos de marzo 2025", "Las películas más esperadas del mes que no te puedes perder."),
-        ("El renacer de los clásicos", "Remakes que están trayendo de vuelta historias icónicas con un toque moderno."),
-        ("Oscars 2025: Predicciones", "Quiénes lideran las nominaciones y qué películas podrían ganar."),
-        ("Cine independiente en auge", "Festivales que están destacando este año y películas imperdibles."),
-        ("Tecnología en el cine", "Cómo los efectos visuales están evolucionando para crear experiencias únicas."),
-        ("Directores emergentes", "Nuevos talentos que están dejando su marca en la industria cinematográfica."),
-        ("El impacto del streaming", "Cómo las plataformas están cambiando la forma en que consumimos cine."),
-        ("Cine de ciencia ficción", "Películas que predicen el futuro con un toque de creatividad."),
-        ("Documentales imprescindibles", "Historias reales que inspiran y educan a la audiencia."),
-        ("El arte de la cinematografía", "Técnicas detrás de las grandes películas que han marcado historia."),
+    "Movie Buff": [
+        ("March 2025 Releases", "The most anticipated movies of the month that you shouldn't miss."),
+        ("Revival of the Classics", "Remakes bringing back iconic stories with a modern twist."),
     ],
 }
 
 content_based_recommendations = {
-    "Amante de la tecnología": [
-        ("Nuevos gadgets de 2025", "Lo último en tecnología portátil que está revolucionando el mercado."),
-        ("El impacto de la nube", "Cómo la nube está transformando las operaciones empresariales modernas."),
-        ("Avances en robótica", "Robots que cambiarán nuestras vidas en la próxima década con aplicaciones innovadoras."),
-        ("El futuro del trabajo remoto", "Tecnologías que están redefiniendo el teletrabajo y la colaboración."),
-        ("Blockchain más allá de las criptos", "Aplicaciones innovadoras que están revolucionando industrias como la salud y la logística."),
-        ("IA y ética: Un debate", "Explorando los límites de la inteligencia artificial y sus implicaciones."),
-        ("Tendencias tecnológicas 2025", "Qué esperar este año en el mundo de la tecnología y la innovación."),
-        ("El auge de los drones", "Aplicaciones civiles y comerciales que están expandiendo el uso de drones."),
-        ("Seguridad en IoT", "Cómo proteger tus dispositivos conectados en un mundo hiperconectado."),
-        ("El futuro de la educación", "Tecnología que está transformando el aula y el aprendizaje."),
+    "Tech Enthusiast": [
+        ("Latest Gadgets of 2025", "The newest portable tech making waves in the market."),
+        ("Cloud Impact", "How cloud computing is transforming modern business operations."),
     ],
-    "Fanático del deporte": [
-        ("Entrenamiento con tecnología", "Gadgets que están ayudando a los atletas a mejorar su rendimiento físico."),
-        ("Lesiones deportivas: Prevención", "Consejos prácticos para evitar lesiones comunes en deportistas de alto rendimiento."),
-        ("Fórmula 1: Temporada 2025", "Lo que viene en el automovilismo y los equipos favoritos para ganar."),
-        ("Deportes extremos", "Nuevas tendencias y destinos para los amantes de la adrenalina y la aventura."),
-        ("Historias de superación", "Atletas que vencieron la adversidad para alcanzar la gloria deportiva."),
-        ("Tecnología en el fútbol", "El VAR y otras innovaciones que están cambiando las reglas del juego."),
-        ("Maratones más populares", "Eventos que no te puedes perder si eres un corredor apasionado."),
-        ("Nutrición para atletas", "Consejos de expertos para optimizar tu dieta y rendimiento."),
-        ("Deportes acuáticos", "Tendencias y competiciones que están marcando el 2025."),
-        ("El impacto de los fans", "Cómo los seguidores están influyendo en los eventos deportivos modernos."),
+    "Sports Fan": [
+        ("Tech in Sports", "How data and analytics are changing the game."),
+        ("Training Innovations", "Gadgets that help athletes enhance their performance."),
     ],
-    "Entusiasta de política": [
-        ("La política en la era digital", "Cómo las redes sociales están influyendo en las decisiones políticas globales."),
-        ("Cambio climático y acción política", "Decisiones clave que están moldeando el futuro del planeta en 2025."),
-        ("El futuro de la democracia", "Tendencias globales que están redefiniendo los sistemas democráticos modernos."),
-        ("Economía post-pandemia", "Lecciones aprendidas y nuevas estrategias económicas para un mundo en recuperación."),
-        ("Liderazgo femenino", "Mujeres que están cambiando el panorama político mundial con sus iniciativas."),
-        ("Tecnología y elecciones", "El papel de los datos y la IA en las campañas electorales modernas."),
-        ("Políticas de IA", "Regulaciones que están emergiendo para controlar el uso de la inteligencia artificial."),
-        ("Sostenibilidad global", "Acuerdos internacionales que están marcando el camino hacia un futuro sostenible."),
-        ("Derechos digitales", "Privacidad y seguridad en la era digital: un debate en curso."),
-        ("El futuro del trabajo", "Políticas laborales emergentes para adaptarse a un mundo cambiante."),
+    "Political Enthusiast": [
+        ("Digital Politics", "How social media is influencing global political decisions."),
+        ("Post-Pandemic Economy", "New economic strategies in a recovering world."),
     ],
-    "Aficionado al cine": [
-        ("Directores emergentes", "Nuevos talentos que están dejando su marca en la industria cinematográfica global."),
-        ("El impacto del streaming", "Cómo las plataformas están cambiando la forma en que consumimos cine y series."),
-        ("Cine de ciencia ficción", "Películas que predicen el futuro con un toque de creatividad e innovación visual."),
-        ("Documentales imprescindibles", "Historias reales que inspiran y educan a la audiencia sobre temas clave."),
-        ("El arte de la cinematografía", "Técnicas detrás de las grandes películas que han marcado historia en el cine."),
-        ("Cine y tecnología", "Cómo la IA está creando nuevas experiencias cinematográficas inmersivas."),
-        ("Festivales de cine 2025", "Eventos imperdibles para los amantes del cine independiente y comercial."),
-        ("El legado de los clásicos", "Películas que definieron una era y siguen siendo relevantes hoy."),
-        ("Nuevos géneros cinematográficos", "Tendencias emergentes que están redefiniendo el cine moderno."),
-        ("Cine y realidad aumentada", "Experiencias inmersivas que están llevando el cine al siguiente nivel."),
+    "Movie Buff": [
+        ("Directors to Watch", "Emerging talents reshaping the cinematic landscape."),
+        ("Streaming Impact", "How platforms are changing the way we experience movies."),
     ],
 }
 
 hybrid_recommendations = {
-    "Amante de la tecnología": [
-        ("IA y ética: Un debate", "Explorando los límites de la inteligencia artificial y sus implicaciones éticas."),
-        ("Tendencias tecnológicas 2025", "Qué esperar este año en el mundo de la tecnología y la innovación global."),
-        ("El auge de los drones", "Aplicaciones civiles y comerciales que están expandiendo el uso de drones en 2025."),
-        ("Seguridad en IoT", "Cómo proteger tus dispositivos conectados en un mundo hiperconectado e interdependiente."),
-        ("El futuro de la educación", "Tecnología que está transformando el aula y el aprendizaje a nivel global."),
-        ("Nuevos gadgets de 2025", "Lo último en tecnología portátil que está revolucionando el mercado actual."),
-        ("El impacto de la nube", "Cómo la nube está transformando las operaciones empresariales modernas y eficientes."),
-        ("Avances en robótica", "Robots que cambiarán nuestras vidas en la próxima década con aplicaciones innovadoras."),
-        ("El futuro del trabajo remoto", "Tecnologías que están redefiniendo el teletrabajo y la colaboración digital."),
-        ("Blockchain más allá de las criptos", "Aplicaciones innovadoras que están revolucionando industrias como la salud y la logística."),
+    "Tech Enthusiast": [
+        ("AI Ethics Debate", "Exploring the ethical implications of artificial intelligence."),
+        ("Trends in Technology 2025", "What to expect in the world of tech this year."),
     ],
-    "Fanático del deporte": [
-        ("Tecnología en el fútbol", "El VAR y otras innovaciones que están cambiando las reglas del juego moderno."),
-        ("Maratones más populares", "Eventos que no te puedes perder si eres un corredor apasionado y competitivo."),
-        ("Nutrición para atletas", "Consejos de expertos para optimizar tu dieta y rendimiento físico."),
-        ("Deportes acuáticos", "Tendencias y competiciones que están marcando el 2025 en el mundo deportivo."),
-        ("El impacto de los fans", "Cómo los seguidores están influyendo en los eventos deportivos modernos y globales."),
-        ("Final de la Champions 2025", "Resumen del partido de la década con momentos clave y análisis detallado."),
-        ("Atletas que rompen récords", "Historias inspiradoras de deportistas que están haciendo historia en 2025."),
-        ("NBA: Lo que viene", "Predicciones para la temporada 2025-2026 y jugadores a seguir de cerca."),
-        ("El regreso de las Olimpiadas", "Preparativos para el próximo evento mundial que no te puedes perder."),
-        ("Fórmula 1: Temporada 2025", "Lo que viene en el automovilismo y los equipos favoritos para ganar."),
+    "Sports Fan": [
+        ("Tech in Football", "Innovations changing the modern game."),
+        ("Marathon Highlights", "Not-to-miss events for passionate runners."),
     ],
-    "Entusiasta de política": [
-        ("Tecnología y elecciones", "El papel de los datos y la IA en las campañas electorales modernas y digitales."),
-        ("Políticas de IA", "Regulaciones que están emergiendo para controlar el uso de la inteligencia artificial."),
-        ("Sostenibilidad global", "Acuerdos internacionales que están marcando el camino hacia un futuro sostenible."),
-        ("Derechos digitales", "Privacidad y seguridad en la era digital: un debate en curso a nivel global."),
-        ("El futuro del trabajo", "Políticas laborales emergentes para adaptarse a un mundo cambiante y tecnológico."),
-        ("Elecciones 2025: Lo que debes saber", "Un análisis profundo de los candidatos y sus propuestas clave para el futuro."),
-        ("Políticas climáticas globales", "Nuevas medidas para combatir el cambio climático a nivel internacional y local."),
-        ("Tensiones geopolíticas", "Lo último en relaciones internacionales y conflictos emergentes en 2025."),
-        ("Reformas económicas", "Impacto de las nuevas leyes fiscales en la economía global y local."),
-        ("Liderazgo femenino", "Mujeres que están cambiando el panorama político mundial con sus iniciativas."),
+    "Political Enthusiast": [
+        ("Data in Elections", "The role of data and AI in modern campaigns."),
+        ("Sustainable Future", "Global agreements paving the way for a greener world."),
     ],
-    "Aficionado al cine": [
-        ("Cine y tecnología", "Cómo la IA está creando nuevas experiencias cinematográficas inmersivas y únicas."),
-        ("Festivales de cine 2025", "Eventos imperdibles para los amantes del cine independiente y comercial este año."),
-        ("El legado de los clásicos", "Películas que definieron una era y siguen siendo relevantes hoy en día."),
-        ("Nuevos géneros cinematográficos", "Tendencias emergentes que están redefiniendo el cine moderno y global."),
-        ("Cine y realidad aumentada", "Experiencias inmersivas que están llevando el cine al siguiente nivel de innovación."),
-        ("Estrenos de marzo 2025", "Las películas más esperadas del mes que no te puedes perder en cines."),
-        ("El renacer de los clásicos", "Remakes que están trayendo de vuelta historias icónicas con un toque moderno."),
-        ("Oscars 2025: Predicciones", "Quiénes lideran las nominaciones y qué películas podrían ganar este año."),
-        ("Cine independiente en auge", "Festivales que están destacando este año y películas imperdibles para ver."),
-        ("Tecnología en el cine", "Cómo los efectos visuales están evolucionando para crear experiencias únicas."),
+    "Movie Buff": [
+        ("Cinema and Technology", "How AI is creating immersive movie experiences."),
+        ("Film Festival 2025", "Upcoming events for independent and mainstream films."),
     ],
 }
 
-# Función para obtener recomendaciones
 def get_recommendations(profile, recommender_type):
-    if recommender_type == "Filtrado Colaborativo":
+    if recommender_type == "Collaborative Filtering":
         return collab_recommendations.get(profile, [])[:num_recommendations]
-    elif recommender_type == "Basado en Contenido":
+    elif recommender_type == "Content-Based":
         return content_based_recommendations.get(profile, [])[:num_recommendations]
-    elif recommender_type == "Híbrido":
+    elif recommender_type == "Hybrid":
         return hybrid_recommendations.get(profile, [])[:num_recommendations]
     return []
 
-# Pestañas para cada tipo de recomendador con un diseño interactivo y moderno
-tab1, tab2, tab3 = st.tabs(["Filtrado Colaborativo", "Basado en Contenido", "Híbrido"])
+# Tabs for each recommendation method
+tab1, tab2, tab3 = st.tabs(["Collaborative Filtering", "Content-Based", "Hybrid"])
 
 with tab1:
     st.markdown('<div class="tab-content">', unsafe_allow_html=True)
-    st.markdown('<h2 class="section-header">Filtrado Colaborativo</h2>', unsafe_allow_html=True)
-    st.markdown('<p class="description-text">Este método analiza el comportamiento de usuarios con intereses similares a los tuyos para recomendarte noticias relevantes.</p>', unsafe_allow_html=True)
-    recommendations = get_recommendations(selected_profile, "Filtrado Colaborativo")
+    st.markdown('<h2 class="section-header">Collaborative Filtering</h2>', unsafe_allow_html=True)
+    st.markdown('<p class="description-text">This method analyzes the behavior of users with similar interests to recommend relevant news articles.</p>', unsafe_allow_html=True)
+    recommendations = get_recommendations(selected_profile, "Collaborative Filtering")
     if recommendations:
         for title, summary in recommendations:
-            st.markdown(
-                f"""
+            st.markdown(f"""
                 <div class="article-card">
                     <h3 class="article-title">{title}</h3>
                     <p class="article-summary">{summary}</p>
                 </div>
-                """, unsafe_allow_html=True
-            )
+            """, unsafe_allow_html=True)
     else:
-        st.markdown('<p class="description-text">No hay recomendaciones disponibles para este perfil en este momento.</p>', unsafe_allow_html=True)
+        st.markdown('<p class="description-text">No recommendations available for this profile at the moment.</p>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 with tab2:
     st.markdown('<div class="tab-content">', unsafe_allow_html=True)
-    st.markdown('<h2 class="section-header">Basado en Contenido</h2>', unsafe_allow_html=True)
-    st.markdown('<p class="description-text">Este método recomienda noticias basándose en el contenido de los artículos que has leído anteriormente, identificando patrones en tus preferencias.</p>', unsafe_allow_html=True)
-    recommendations = get_recommendations(selected_profile, "Basado en Contenido")
+    st.markdown('<h2 class="section-header">Content-Based</h2>', unsafe_allow_html=True)
+    st.markdown('<p class="description-text">This method recommends news based on the content of articles you have previously read, identifying patterns in your preferences.</p>', unsafe_allow_html=True)
+    recommendations = get_recommendations(selected_profile, "Content-Based")
     if recommendations:
         for title, summary in recommendations:
-            st.markdown(
-                f"""
+            st.markdown(f"""
                 <div class="article-card">
                     <h3 class="article-title">{title}</h3>
                     <p class="article-summary">{summary}</p>
                 </div>
-                """, unsafe_allow_html=True
-            )
+            """, unsafe_allow_html=True)
     else:
-        st.markdown('<p class="description-text">No hay recomendaciones disponibles para este perfil en este momento.</p>', unsafe_allow_html=True)
+        st.markdown('<p class="description-text">No recommendations available for this profile at the moment.</p>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 with tab3:
     st.markdown('<div class="tab-content">', unsafe_allow_html=True)
-    st.markdown('<h2 class="section-header">Híbrido</h2>', unsafe_allow_html=True)
-    st.markdown('<p class="description-text">Este método combina lo mejor del filtrado colaborativo y basado en contenido para ofrecerte recomendaciones más precisas y personalizadas.</p>', unsafe_allow_html=True)
-    recommendations = get_recommendations(selected_profile, "Híbrido")
+    st.markdown('<h2 class="section-header">Hybrid</h2>', unsafe_allow_html=True)
+    st.markdown('<p class="description-text">This method combines the strengths of collaborative filtering and content-based approaches to offer you more precise recommendations.</p>', unsafe_allow_html=True)
+    recommendations = get_recommendations(selected_profile, "Hybrid")
     if recommendations:
         for title, summary in recommendations:
-            st.markdown(
-                f"""
+            st.markdown(f"""
                 <div class="article-card">
                     <h3 class="article-title">{title}</h3>
                     <p class="article-summary">{summary}</p>
                 </div>
-                """, unsafe_allow_html=True
-            )
+            """, unsafe_allow_html=True)
     else:
-        st.markdown('<p class="description-text">No hay recomendaciones disponibles para este perfil en este momento.</p>', unsafe_allow_html=True)
+        st.markdown('<p class="description-text">No recommendations available for this profile at the moment.</p>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# Footer con información adicional y enlaces
-st.markdown(
-    """
+# Footer
+st.markdown("""
     <div class="footer">
-        <p>© 2025 SokoNews - Desarrollado para Microsoft Capstone Project</p>
-        <p>Explora el poder de la recomendación de noticias con el <a href="https://www.kaggle.com/datasets/arashnic/mind-news-dataset" target="_blank">dataset MIND</a>.</p>
+        <p>© 2025 SokoNews - Developed for Microsoft Capstone Project</p>
+        <p>Explore the MIND dataset <a href="https://www.kaggle.com/datasets/arashnic/mind-news-dataset" target="_blank">here</a>.</p>
     </div>
-    """, unsafe_allow_html=True
-)
+""", unsafe_allow_html=True)
