@@ -160,7 +160,7 @@ st.markdown('<div class="header-container">', unsafe_allow_html=True)
 col1, col2 = st.columns([1, 5])
 with col1:
     # Show your main logo (if needed)
-    st.image("logo.png", width=10)
+    st.image("microsoft.png", width=10)
 with col2:
     # Display the Microsoft logo next to the title using inline HTML
     st.markdown('''
