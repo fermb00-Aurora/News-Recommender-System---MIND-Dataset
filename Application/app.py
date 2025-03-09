@@ -8,80 +8,73 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Apply custom CSS for a readable dark theme
+# Custom CSS for a light, Microsoft-inspired UI
 st.markdown("""
     <style>
-        /* Overall Dark Background */
+        /* Overall Light Background */
         body {
-            background-color: #2E2E2E !important;
+            background-color: #FFFFFF !important;
             font-family: 'Segoe UI', Arial, sans-serif;
-            color: #EAEAEA;
+            color: #333333; /* Dark text for readability */
         }
         .stApp {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
-        
-        /* Header Section */
-        .header-container {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px 0;
-            border-bottom: 2px solid #00A4EF;
-        }
+
+        /* Title and Subtitle */
         .main-title {
-            color: #00A4EF;
-            font-size: 2.8em;
+            color: #0078D4; /* A typical Microsoft accent color */
+            font-size: 2.6em;
             font-weight: 700;
             margin: 0;
         }
         .subtitle {
-            color: #CCCCCC;
+            color: #666666;
             font-size: 1.1em;
             font-weight: 400;
             margin-top: 5px;
         }
-        
+
         /* Control Section */
         .control-section {
-            background-color: #3A3A3A;
+            background-color: #FAFAFA;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            border: 1px solid #E0E0E0;
             margin: 20px 0;
             display: flex;
             gap: 20px;
             align-items: center;
         }
         .control-label {
-            color: #00A4EF;
+            color: #0078D4;
             font-size: 1em;
             font-weight: 500;
             margin-bottom: 5px;
         }
-        
+
         /* Streamlit Widgets */
         .stSelectbox > div > div > div {
-            background-color: #454545;
-            border: 1px solid #00A4EF;
+            background-color: #FFFFFF;
+            border: 1px solid #0078D4;
             border-radius: 5px;
             padding: 5px;
             font-size: 1em;
-            color: #EAEAEA;
+            color: #333333;
         }
         .stSlider > div > div > div > div {
-            background-color: #00A4EF;
+            background-color: #0078D4;
         }
-        
+
         /* Tabs */
         .stTabs {
             margin-top: 20px;
         }
         .stTabs [role="tab"] {
-            background-color: #3A3A3A;
-            color: #00A4EF;
+            background-color: #F0F0F0;
+            color: #0078D4;
             border-radius: 10px 10px 0 0;
             padding: 12px 25px;
             font-weight: 500;
@@ -89,64 +82,64 @@ st.markdown("""
             transition: background-color 0.3s, color 0.3s;
         }
         .stTabs [role="tab"][aria-selected="true"] {
-            background-color: #2E2E2E;
-            color: #FF8C00;
-            border-bottom: 3px solid #FF8C00;
+            background-color: #FFFFFF;
+            color: #F25022; /* Accent color for active tab, similar to MS palette */
+            border-bottom: 3px solid #F25022;
         }
         .stTabs [role="tab"]:hover {
-            background-color: #454545;
+            background-color: #E8E8E8;
         }
         .tab-content {
-            background-color: #3A3A3A;
+            background-color: #FFFFFF;
             padding: 25px;
             border-radius: 0 10px 10px 10px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+            border: 1px solid #E0E0E0;
         }
-        
-        /* Article Cards */
+
+        /* Article Cards (Light Blue) */
         .article-card {
-            background-color: #454545;
+            background-color: #E6F7FF; /* Light blue for clarity */
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 15px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transition: transform 0.2s, box-shadow 0.2s;
-            border-left: 4px solid #00A4EF;
+            border-left: 4px solid #0078D4;
         }
         .article-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
         }
         .article-title {
-            color: #00A4EF;
+            color: #0078D4;
             font-size: 1.4em;
             font-weight: 600;
             margin-bottom: 8px;
         }
         .article-summary {
-            color: #CCCCCC;
+            color: #333333;
             font-size: 1em;
             line-height: 1.5;
         }
         .description-text {
-            color: #CCCCCC;
+            color: #666666;
             font-size: 1em;
             font-style: italic;
             margin-bottom: 25px;
             line-height: 1.6;
         }
-        
+
         /* Footer */
         .footer {
             text-align: center;
-            color: #CCCCCC;
+            color: #666666;
             font-size: 0.9em;
             margin-top: 40px;
             padding: 20px 0;
-            border-top: 1px solid #00A4EF;
+            border-top: 1px solid #0078D4;
         }
         .footer a {
-            color: #00A4EF;
+            color: #0078D4;
             text-decoration: none;
         }
         .footer a:hover {
@@ -155,13 +148,11 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Directly display the title and subtitle without using columns
+# Title and Subtitle
 st.markdown('<h1 class="main-title">SokoNews</h1>', unsafe_allow_html=True)
 st.markdown('<p class="subtitle">Discover personalized news recommendations using Microsoft technology</p>', unsafe_allow_html=True)
-st.markdown('</div>', unsafe_allow_html=True)
 
-
-# Control Section for user profile & number of recommendations
+# Control Section
 st.markdown('<div class="control-section">', unsafe_allow_html=True)
 col1, col2, col3 = st.columns([2, 2, 1])
 with col1:
@@ -185,10 +176,9 @@ with col3:
     st.markdown('<p class="control-label">Refresh</p>', unsafe_allow_html=True)
     if st.button("Refresh"):
         st.info("Page refreshed!")  # Button click triggers a rerun automatically
-
 st.markdown('</div>', unsafe_allow_html=True)
 
-# Dummy data for recommendations
+# Sample data for recommendations
 collab_recommendations = {
     "Tech Enthusiast": [
         ("AI Revolutionizes the World", "A breakthrough in artificial intelligence is changing how we interact with technology."),
@@ -255,7 +245,7 @@ def get_recommendations(profile, recommender_type):
         return hybrid_recommendations.get(profile, [])[:num_recommendations]
     return []
 
-# Create tabs for each recommendation method
+# Tabs for each recommendation method
 tab1, tab2, tab3 = st.tabs(["Collaborative Filtering", "Content-Based", "Hybrid"])
 
 with tab1:
