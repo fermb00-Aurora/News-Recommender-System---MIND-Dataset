@@ -160,7 +160,7 @@ st.markdown('<div class="header-container">', unsafe_allow_html=True)
 col1, col2 = st.columns([1, 5])
 with col1:
     # Ensure logo.png is in the same folder as this app.py
-    st.image("logo.png", width=80)
+    st.image("logo.png", width=10)
 with col2:
     st.markdown('<h1 class="main-title">SokoNews</h1>', unsafe_allow_html=True)
     st.markdown('<p class="subtitle">Discover personalized news recommendations using Microsoft technology</p>', unsafe_allow_html=True)
