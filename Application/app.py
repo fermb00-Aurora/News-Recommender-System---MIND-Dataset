@@ -216,7 +216,7 @@ st.markdown("""
 # Optional top-right logo
 st.markdown("""
     <div class="top-right-logo">
-        <img src="logo.jpg" width="100">
+        <img src="Application/logo.jpg" width="100">
     </div>
 """, unsafe_allow_html=True)
 
