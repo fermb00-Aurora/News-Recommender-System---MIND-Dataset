@@ -1,6 +1,105 @@
 import streamlit as st
+import openai
 
-# Set page configuration
+# Set your OpenAI API key (be careful with API key exposure in production)
+openai.api_key = "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"
+
+# Initialize chatbot state if not already set
+if "chat_visible" not in st.session_state:
+    st.session_state["chat_visible"] = True
+if "chat_history" not in st.session_state:
+    st.session_state["chat_history"] = []
+    # Initial chatbot greeting that starts the conversation
+    st.session_state.chat_history.append({
+        "role": "assistant", 
+        "content": "Hello, I'm ChatNews 🤖! I'm here to help you with your news recommendations. To start, which type of news interests you the most?"
+    })
+
+def get_chatbot_response(conversation):
+    # Call OpenAI's ChatCompletion API using the conversation history
+    response = openai.ChatCompletion.create(
+         model="gpt-3.5-turbo",
+         messages=conversation
+    )
+    return response["choices"][0]["message"]["content"]
+
+def add_message(role, content):
+    st.session_state.chat_history.append({"role": role, "content": content})
+
+# --- Chatbot Modal Popup ---
+if st.session_state.chat_visible:
+    with st.container():
+        st.markdown("""
+            <style>
+                .chat-modal {
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    width: 350px;
+                    background-color: #FFFFFF;
+                    border: 1px solid #E0E0E0;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                    padding: 10px;
+                    z-index: 10000;
+                }
+                .chat-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    border-bottom: 1px solid #E0E0E0;
+                    padding-bottom: 5px;
+                    margin-bottom: 5px;
+                }
+                .chat-body {
+                    max-height: 200px;
+                    overflow-y: auto;
+                }
+                .chat-input {
+                    width: 100%;
+                }
+                .chat-button {
+                    margin-top: 5px;
+                }
+            </style>
+        """, unsafe_allow_html=True)
+        
+        st.markdown('<div class="chat-modal">', unsafe_allow_html=True)
+        # Chat header with title and close button
+        col_header1, col_header2 = st.columns([3, 1])
+        with col_header1:
+            st.markdown("<strong>ChatBot 🤖</strong>", unsafe_allow_html=True)
+        with col_header2:
+            # When clicked, hide the chat modal by setting chat_visible to False
+            if st.button("X", key="close_chat"):
+                st.session_state.chat_visible = False
+                st.experimental_rerun()
+        
+        # Chat body: display conversation history
+        with st.container():
+            for msg in st.session_state.chat_history:
+                if msg["role"] == "assistant":
+                    st.markdown(f"<p><strong>Bot:</strong> {msg['content']}</p>", unsafe_allow_html=True)
+                else:
+                    st.markdown(f"<p><strong>You:</strong> {msg['content']}</p>", unsafe_allow_html=True)
+        
+        # Chat input
+        user_message = st.text_input("Your message", key="chat_input", help="Type your message and press Send.")
+        if st.button("Send", key="send_chat"):
+            if user_message:
+                add_message("user", user_message)
+                response = get_chatbot_response(st.session_state.chat_history)
+                add_message("assistant", response)
+                # Clear input by updating session_state; a rerun will refresh the modal display
+                st.session_state.chat_input = ""
+                st.experimental_rerun()
+        st.markdown("</div>", unsafe_allow_html=True)
+        
+# --- End Chatbot Modal ---
+
+# --- Existing Web App Code ---
+
+# Set page configuration (already set above)
 st.set_page_config(
     page_title="SokoNews - News Recommender",
     page_icon="📰",
@@ -149,6 +248,13 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# Top-right logo (if desired; remove if not needed)
+st.markdown("""
+    <div class="top-right-logo">
+        <img src="logo.jpg" width="100">
+    </div>
+""", unsafe_allow_html=True)
+
 # Title and Subtitle (centered under the logo)
 st.markdown('<h1 class="main-title">SokoNews 🚀</h1>', unsafe_allow_html=True)
 st.markdown('<p class="subtitle">Discover personalized news recommendations using Microsoft technology ✨</p>', unsafe_allow_html=True)
@@ -176,7 +282,7 @@ with col2:
 with col3:
     st.markdown('<p class="control-label">Refresh</p>', unsafe_allow_html=True)
     if st.button("Refresh"):
-        st.info("Page refreshed!")  # Button click triggers a rerun automatically
+        st.info("Page refreshed!")
 st.markdown('</div>', unsafe_allow_html=True)
 
 # Extended dummy data for recommendations
