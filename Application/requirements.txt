@@ -1,2 +1,2 @@
-streamlit
-base64
+streamlit>=1.43.1
+openai>=0.27.0
