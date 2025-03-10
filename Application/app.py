@@ -1,111 +1,164 @@
 import streamlit as st
 import openai
+import base64
 
-# Set your OpenAI API key (be careful with API key exposure in production)
-openai.api_key = "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"
+# ============================
+# SET UP OPENAI API (Securely)
+# ============================
+# Use the API key from st.secrets (ensure you have added it in .streamlit/secrets.toml)
+if "OPENAI_API_KEY" not in st.secrets:
+    st.error("Please add your OpenAI API key to st.secrets.")
+    st.stop()
+else:
+    openai.api_key = st.secrets["OPENAI_API_KEY"]
 
-# Initialize chatbot state if not already set
+# =====================================
+# Initialize Chatbot Session Variables
+# =====================================
 if "chat_visible" not in st.session_state:
     st.session_state["chat_visible"] = True
+if "chat_stage" not in st.session_state:
+    st.session_state["chat_stage"] = 0  # 0: Ask for news interest; 1: Provide recommendations; -1: Chat closed
+if "chat_profile" not in st.session_state:
+    st.session_state["chat_profile"] = None
 if "chat_history" not in st.session_state:
     st.session_state["chat_history"] = []
-    # Initial chatbot greeting that starts the conversation
+    # Initial chatbot message (chatbot initiates conversation)
     st.session_state.chat_history.append({
         "role": "assistant", 
-        "content": "Hello, I'm ChatNews 🤖! I'm here to help you with your news recommendations. To start, which type of news interests you the most?"
+        "content": "Hello, I'm ChatNews 🤖! I'm here to help you get the best news recommendations. To start, what type of news interests you the most? (e.g., Tech, Sports, Politics, or Movies)"
     })
 
-def get_chatbot_response(conversation):
-    # Call OpenAI's ChatCompletion API using the conversation history
-    response = openai.ChatCompletion.create(
-         model="gpt-3.5-turbo",
-         messages=conversation
-    )
-    return response["choices"][0]["message"]["content"]
+# Helper function to map user input to a profile
+def map_input_to_profile(user_input):
+    user_input_lower = user_input.lower()
+    if "tech" in user_input_lower or "computer" in user_input_lower:
+        return "Tech Enthusiast 💻"
+    elif "sport" in user_input_lower or "game" in user_input_lower:
+        return "Sports Fan ⚽"
+    elif "politic" in user_input_lower or "government" in user_input_lower:
+        return "Political Enthusiast 🏛️"
+    elif "movie" in user_input_lower or "film" in user_input_lower:
+        return "Movie Buff 🎬"
+    else:
+        return None
 
-def add_message(role, content):
-    st.session_state.chat_history.append({"role": role, "content": content})
+# Dummy recommendations for chatbot explanation
+dummy_recommendations = {
+    "Tech Enthusiast 💻": [
+        ("AI Revolutionizes the World 🤖", "A breakthrough in AI is transforming technology."),
+        ("The Future of Smartphones 📱", "Innovative designs set to change mobile markets."),
+        ("Quantum Computing Advances", "Exploring the next frontier in computing.")
+    ],
+    "Sports Fan ⚽": [
+        ("Champions League Final 2025 🏆", "An epic match with unforgettable moments."),
+        ("Record-Breaking Athletes", "Stories of athletes setting new records."),
+        ("Olympic Dreams", "Rising stars preparing for the Olympics.")
+    ],
+    "Political Enthusiast 🏛️": [
+        ("Elections 2025: What You Need to Know 🗳️", "A detailed look at upcoming elections."),
+        ("Global Climate Policies", "How international measures are tackling climate change."),
+        ("Diplomatic Breakthroughs", "Historic agreements reshaping politics.")
+    ],
+    "Movie Buff 🎬": [
+        ("March 2025 Releases 🍿", "Highly anticipated films of the month."),
+        ("Revival of the Classics", "Iconic films reimagined for today."),
+        ("Indie Film Spotlight", "Breakthrough films from independent directors.")
+    ]
+}
 
-# --- Chatbot Modal Popup ---
-if st.session_state.chat_visible:
+# ===============================
+# CHATBOT MODAL POPUP IMPLEMENTATION
+# ===============================
+if st.session_state.chat_visible and st.session_state.chat_stage != -1:
+    st.markdown("""
+        <style>
+            .chat-modal {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                width: 350px;
+                background-color: #FFFFFF;
+                border: 1px solid #E0E0E0;
+                border-radius: 8px;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                padding: 10px;
+                z-index: 10000;
+            }
+            .chat-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 1px solid #E0E0E0;
+                padding-bottom: 5px;
+                margin-bottom: 5px;
+            }
+            .chat-body {
+                max-height: 200px;
+                overflow-y: auto;
+            }
+        </style>
+    """, unsafe_allow_html=True)
+    
     with st.container():
-        st.markdown("""
-            <style>
-                .chat-modal {
-                    position: fixed;
-                    bottom: 20px;
-                    right: 20px;
-                    width: 350px;
-                    background-color: #FFFFFF;
-                    border: 1px solid #E0E0E0;
-                    border-radius: 8px;
-                    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-                    padding: 10px;
-                    z-index: 10000;
-                }
-                .chat-header {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    border-bottom: 1px solid #E0E0E0;
-                    padding-bottom: 5px;
-                    margin-bottom: 5px;
-                }
-                .chat-body {
-                    max-height: 200px;
-                    overflow-y: auto;
-                }
-                .chat-input {
-                    width: 100%;
-                }
-                .chat-button {
-                    margin-top: 5px;
-                }
-            </style>
-        """, unsafe_allow_html=True)
-        
         st.markdown('<div class="chat-modal">', unsafe_allow_html=True)
-        # Chat header with title and close button
+        # Chat header with title and a close button
         col_header1, col_header2 = st.columns([3, 1])
         with col_header1:
             st.markdown("<strong>ChatBot 🤖</strong>", unsafe_allow_html=True)
         with col_header2:
-            # When clicked, hide the chat modal by setting chat_visible to False
             if st.button("X", key="close_chat"):
                 st.session_state.chat_visible = False
-                st.experimental_rerun()
-        
-        # Chat body: display conversation history
-        with st.container():
-            for msg in st.session_state.chat_history:
-                if msg["role"] == "assistant":
-                    st.markdown(f"<p><strong>Bot:</strong> {msg['content']}</p>", unsafe_allow_html=True)
+                st.experimental_rerun()  # Refresh the page to hide the chat modal
+
+        # Display conversation history using st.chat_message (available in Streamlit versions supporting chat)
+        for msg in st.session_state.chat_history:
+            with st.chat_message(msg["role"]):
+                st.markdown(msg["content"])
+
+        # Sequential conversation logic:
+        if st.session_state.chat_stage == 0:
+            # Stage 0: Ask for user's news interest
+            user_input = st.chat_input("What type of news interests you?")
+            if user_input:
+                st.session_state.chat_history.append({"role": "user", "content": user_input})
+                profile = map_input_to_profile(user_input)
+                if profile is None:
+                    st.session_state.chat_history.append({
+                        "role": "assistant", 
+                        "content": "I didn't quite understand that. Please mention one of these topics: Tech, Sports, Politics, or Movies."
+                    })
                 else:
-                    st.markdown(f"<p><strong>You:</strong> {msg['content']}</p>", unsafe_allow_html=True)
-        
-        # Chat input
-        user_message = st.text_input("Your message", key="chat_input", help="Type your message and press Send.")
-        if st.button("Send", key="send_chat"):
-            if user_message:
-                add_message("user", user_message)
-                response = get_chatbot_response(st.session_state.chat_history)
-                add_message("assistant", response)
-                # Clear input by updating session_state; a rerun will refresh the modal display
-                st.session_state.chat_input = ""
+                    st.session_state.chat_profile = profile
+                    st.session_state.chat_history.append({
+                        "role": "assistant", 
+                        "content": f"Great! You've chosen **{profile}**. Based on that, I recommend the following articles:"
+                    })
+                    st.session_state.chat_stage = 1
+                st.experimental_rerun()
+        elif st.session_state.chat_stage == 1:
+            # Stage 1: Provide recommendations and explanation
+            profile = st.session_state.chat_profile
+            recs = dummy_recommendations.get(profile, [])
+            if recs:
+                # Take at most 3 recommendations
+                rec_list = "\n".join([f"- [{title}](#)" for title, _ in recs[:3]])
+                explanation = (f"Based on your interest in **{profile}**, here are some articles we recommend:\n\n"
+                               f"{rec_list}\n\n"
+                               "These recommendations were chosen because they cover the latest trends and insights in your area of interest.")
+            else:
+                explanation = "Sorry, no recommendations are available for your profile at the moment."
+            st.session_state.chat_history.append({"role": "assistant", "content": explanation})
+            with st.chat_message("assistant"):
+                st.markdown(explanation)
+            if st.button("Close Chat", key="close_chat_final"):
+                st.session_state.chat_stage = -1  # Mark chat as closed
                 st.experimental_rerun()
         st.markdown("</div>", unsafe_allow_html=True)
-        
-# --- End Chatbot Modal ---
 
-# --- Existing Web App Code ---
-
-# Set page configuration (already set above)
-st.set_page_config(
-    page_title="SokoNews - News Recommender",
-    page_icon="📰",
-    layout="wide",
-    initial_sidebar_state="collapsed"
-)
+# =====================================
+# REST OF THE SOKONEWS WEB APP CODE
+# =====================================
 
 # Custom CSS for a light, Microsoft-inspired UI with clean, clear colors
 st.markdown("""
@@ -248,14 +301,14 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Top-right logo (if desired; remove if not needed)
+# Top-right logo (if desired)
 st.markdown("""
     <div class="top-right-logo">
         <img src="logo.jpg" width="100">
     </div>
 """, unsafe_allow_html=True)
 
-# Title and Subtitle (centered under the logo)
+# Title and Subtitle
 st.markdown('<h1 class="main-title">SokoNews 🚀</h1>', unsafe_allow_html=True)
 st.markdown('<p class="subtitle">Discover personalized news recommendations using Microsoft technology ✨</p>', unsafe_allow_html=True)
 
