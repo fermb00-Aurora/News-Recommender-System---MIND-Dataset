@@ -10,11 +10,12 @@ def safe_rerun():
     the existing query parameters. This avoids using any
     experimental_* methods that may be deprecated.
     """
-    params = st.query_params()
-    st.set_query_params(**params)
+    params = st.query_params  # st.query_params is a property
+    st.set_query_params(**params)  # This triggers a rerun
+
 
 # =====================================
-# SET UP OPENAI API (Securely via st.secrets)
+# SET UP OPENAI API (via st.secrets)
 # =====================================
 if "OPENAI_API_KEY" not in st.secrets:
     st.error("Please add your OpenAI API key to the Streamlit advanced settings (st.secrets).")
@@ -253,9 +254,7 @@ with col3:
         st.info("Page refreshed!")
 st.markdown('</div>', unsafe_allow_html=True)
 
-# ---------------------------
-# TABS
-# ---------------------------
+# Create four tabs: Collab, Content-Based, Hybrid, Chatbot
 tabs = st.tabs(["Collaborative Filtering", "Content-Based", "Hybrid", "Chatbot Recommender"])
 
 # TAB 1: Collaborative Filtering
@@ -335,13 +334,14 @@ with tabs[3]:
                     "content": "I didn't quite understand that. Please mention one of these topics: Tech, Sports, Politics, or Movies."
                 })
             else:
-                st.session_state.chat_profile = profile
+                st.session_state["chat_profile"] = profile
                 st.session_state.chat_history.append({
                     "role": "assistant", 
                     "content": f"Great! You've chosen **{profile}**. Based on that, I recommend the following articles:"
                 })
                 st.session_state["chat_stage"] = 1
             safe_rerun()
+
     elif st.session_state["chat_stage"] == 1:
         profile = st.session_state["chat_profile"]
         recs = dummy_recommendations.get(profile, [])
@@ -362,9 +362,12 @@ with tabs[3]:
         if st.button("Close Chat", key="close_chat_final"):
             st.session_state["chat_stage"] = -1
             safe_rerun()
+    
     st.markdown('</div>', unsafe_allow_html=True)
 
+# ---------------------------
 # Footer
+# ---------------------------
 st.markdown("""
     <div class="footer">
         <p>© 2025 SokoNews - Developed for Microsoft Capstone Project</p>
