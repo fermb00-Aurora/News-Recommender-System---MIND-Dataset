@@ -214,9 +214,10 @@ st.markdown("""
 # If logo.jpg is in the same folder, remove "Application/" from src
 st.markdown("""
     <div class="top-right-logo">
-        <img src="Application/logo.jpg" width="90">
+        <img src="logo.jpg" width="90">
     </div>
 """, unsafe_allow_html=True)
+
 
 # Title & Subtitle
 st.markdown('<h1 class="main-title">SokoNews 🚀</h1>', unsafe_allow_html=True)
