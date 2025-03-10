@@ -1,7 +1,7 @@
 import streamlit as st
 import openai
 import pandas as pd
-from Models.categorical_frequency_model import frequency_categorical_recommender
+from Models.categorical_frequency_model import categorical_frequency_model
 
 # =====================================
 # SET UP OPENAI API (via st.secrets)
