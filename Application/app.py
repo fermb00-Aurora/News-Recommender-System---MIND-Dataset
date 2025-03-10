@@ -214,7 +214,7 @@ st.markdown("""
 # If logo.jpg is in the same folder, remove "Application/" from src
 st.markdown("""
     <div class="top-right-logo">
-        <img src="logo.jpg" style="width: 90px; height: auto;">
+        <img src="logo.jpg" style="width: 90px; height: auto; object-fit: contain;">
     </div>
 """, unsafe_allow_html=True)
 
