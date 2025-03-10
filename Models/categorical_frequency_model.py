@@ -91,13 +91,3 @@ def frequency_categorical_recommender(
         f"Here are {len(recommendations)} articles you haven't read yet:"
     )
     return recommendations[["news_id", "category", "title", "url"]], explanation
-
-# Example usage:
-if __name__ == "__main__":
-    example_user = "U13740"
-    recs, expl = frequency_categorical_recommender(example_user, 5)
-    if recs is not None:
-        print(expl)
-        print(recs)
-    else:
-        print(expl)
