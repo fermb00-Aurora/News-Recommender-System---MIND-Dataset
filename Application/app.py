@@ -1,19 +1,6 @@
 import streamlit as st
 import openai
 
-# -------------------------------
-# Helper: Safe Rerun Function
-# -------------------------------
-def safe_rerun():
-    """
-    Forces a re-run of the app by reading and re-setting
-    the existing query parameters. This avoids using any
-    experimental_* methods that may be deprecated.
-    """
-    params = st.query_params  # st.query_params is a property
-    st.set_query_params(**params)  # This triggers a rerun
-
-
 # =====================================
 # SET UP OPENAI API (via st.secrets)
 # =====================================
@@ -27,57 +14,66 @@ else:
 # Initialize Chatbot Session Variables
 # =====================================
 if "chat_history" not in st.session_state:
+    # We'll store the entire conversation here, user + assistant messages
     st.session_state["chat_history"] = []
+    # The chatbot starts the conversation
     st.session_state.chat_history.append({
-        "role": "assistant", 
+        "role": "assistant",
         "content": (
             "Hello, I'm ChatNews 🤖! I'm here to help you get the best news recommendations. "
-            "To start, what type of news interests you the most? (e.g., Tech, Sports, Politics, or Movies)"
+            "To begin, please tell me what type of news interests you the most (e.g., Tech, Sports, Politics, or Movies)."
         )
     })
 
+# We use a "chat_stage" to track where we are in the conversation:
+# 0 => Asking user about interest
+# 1 => We have a valid profile, we show them recommendations
+# 2 => We ask user if they want to refine or end
+# -1 => Conversation ended
 if "chat_stage" not in st.session_state:
-    st.session_state["chat_stage"] = 0  # 0: ask for interest; 1: provide recommendations
+    st.session_state["chat_stage"] = 0
 if "chat_profile" not in st.session_state:
     st.session_state["chat_profile"] = None
 
-# Helper: Map user input to a profile
-def map_input_to_profile(user_input: str):
-    txt = user_input.lower()
-    if "tech" in txt or "computer" in txt:
-        return "Tech Enthusiast 💻"
-    elif "sport" in txt or "game" in txt:
-        return "Sports Fan ⚽"
-    elif "politic" in txt or "government" in txt:
-        return "Political Enthusiast 🏛️"
-    elif "movie" in txt or "film" in txt:
-        return "Movie Buff 🎬"
-    else:
-        return None
-
-# Dummy recommendations
+# =====================================
+# Dummy Recommendation Data
+# =====================================
 dummy_recommendations = {
     "Tech Enthusiast 💻": [
         ("AI Revolutionizes the World 🤖", "A breakthrough in AI is transforming technology."),
-        ("The Future of Smartphones 📱", "Innovative designs set to change mobile markets."),
-        ("Quantum Computing Advances", "Exploring the next frontier in computing.")
+        ("The Future of Smartphones 📱", "Innovative designs set to change the mobile markets."),
+        ("Quantum Computing Advances", "Exploring the next frontier in computing technology."),
     ],
     "Sports Fan ⚽": [
-        ("Champions League Final 2025 🏆", "An epic match with unforgettable moments."),
-        ("Record-Breaking Athletes", "Stories of athletes setting new records."),
-        ("Olympic Dreams", "Rising stars preparing for the Olympics.")
+        ("Champions League Final 2025 🏆", "A match of the decade with unforgettable moments."),
+        ("Record-Breaking Athletes", "Stories of athletes setting new records in 2025."),
+        ("Olympic Dreams", "Rising stars preparing for the next Olympics."),
     ],
     "Political Enthusiast 🏛️": [
-        ("Elections 2025: What You Need to Know 🗳️", "A detailed look at upcoming elections."),
-        ("Global Climate Policies", "How international measures are tackling climate change."),
-        ("Diplomatic Breakthroughs", "Historic agreements reshaping politics.")
+        ("Elections 2025: What You Need to Know 🗳️", "A detailed look at the upcoming elections."),
+        ("Global Climate Policies", "How international measures tackle climate change."),
+        ("Diplomatic Breakthroughs", "Historic agreements reshaping global politics."),
     ],
     "Movie Buff 🎬": [
-        ("March 2025 Releases 🍿", "Highly anticipated films of the month."),
-        ("Revival of the Classics", "Iconic films reimagined for today."),
-        ("Indie Film Spotlight", "Breakthrough films from independent directors.")
-    ]
+        ("March 2025 Releases 🍿", "Highly anticipated films of the month you shouldn't miss."),
+        ("Revival of the Classics", "Iconic films reimagined for a modern audience."),
+        ("Indie Film Spotlight", "Breakthrough films from independent directors."),
+    ],
 }
+
+# Helper function to map user input to a known profile
+def map_input_to_profile(user_input: str):
+    text = user_input.lower()
+    if "tech" in text or "computer" in text:
+        return "Tech Enthusiast 💻"
+    elif "sport" in text or "game" in text:
+        return "Sports Fan ⚽"
+    elif "politic" in text or "government" in text:
+        return "Political Enthusiast 🏛️"
+    elif "movie" in text or "film" in text:
+        return "Movie Buff 🎬"
+    else:
+        return None
 
 # -----------------------------------
 # PAGE CONFIG & GLOBAL STYLING
@@ -91,7 +87,7 @@ st.set_page_config(
 
 st.markdown("""
     <style>
-        /* Overall Light Background & Font */
+        /* Overall Light Background */
         body {
             background-color: #FFFFFF !important;
             font-family: 'Segoe UI', Arial, sans-serif;
@@ -178,7 +174,7 @@ st.markdown("""
         }
         .article-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
         }
         .article-title {
             color: #0078D4;
@@ -217,7 +213,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Optional: top-right logo
+# Optional top-right logo
 st.markdown("""
     <div class="top-right-logo">
         <img src="logo.jpg" width="100">
@@ -228,7 +224,9 @@ st.markdown("""
 st.markdown('<h1 class="main-title">SokoNews 🚀</h1>', unsafe_allow_html=True)
 st.markdown('<p class="subtitle">Discover personalized news recommendations using Microsoft technology ✨</p>', unsafe_allow_html=True)
 
-# Control Section
+# =========================
+# Control Section (Profile)
+# =========================
 st.markdown('<div class="control-section">', unsafe_allow_html=True)
 col1, col2, col3 = st.columns([2, 2, 1])
 with col1:
@@ -254,7 +252,9 @@ with col3:
         st.info("Page refreshed!")
 st.markdown('</div>', unsafe_allow_html=True)
 
-# Create four tabs: Collab, Content-Based, Hybrid, Chatbot
+# =========================
+# 4 TABS
+# =========================
 tabs = st.tabs(["Collaborative Filtering", "Content-Based", "Hybrid", "Chatbot Recommender"])
 
 # TAB 1: Collaborative Filtering
@@ -262,9 +262,9 @@ with tabs[0]:
     st.markdown('<div class="tab-content">', unsafe_allow_html=True)
     st.markdown('<h2 class="section-header">Collaborative Filtering ⚙️</h2>', unsafe_allow_html=True)
     st.markdown('<p class="description-text">This method analyzes the behavior of users with similar interests to recommend relevant news articles.</p>', unsafe_allow_html=True)
-    recommendations = dummy_recommendations.get(selected_profile, [])[:num_recommendations]
-    if recommendations:
-        for title, summary in recommendations:
+    recs = dummy_recommendations.get(selected_profile, [])[:num_recommendations]
+    if recs:
+        for title, summary in recs:
             st.markdown(f"""
                 <div class="article-card">
                     <h3 class="article-title">{title}</h3>
@@ -280,9 +280,9 @@ with tabs[1]:
     st.markdown('<div class="tab-content">', unsafe_allow_html=True)
     st.markdown('<h2 class="section-header">Content-Based 📄</h2>', unsafe_allow_html=True)
     st.markdown('<p class="description-text">This method recommends news based on the content of articles you have previously read, identifying patterns in your preferences.</p>', unsafe_allow_html=True)
-    recommendations = dummy_recommendations.get(selected_profile, [])[:num_recommendations]
-    if recommendations:
-        for title, summary in recommendations:
+    recs = dummy_recommendations.get(selected_profile, [])[:num_recommendations]
+    if recs:
+        for title, summary in recs:
             st.markdown(f"""
                 <div class="article-card">
                     <h3 class="article-title">{title}</h3>
@@ -298,9 +298,9 @@ with tabs[2]:
     st.markdown('<div class="tab-content">', unsafe_allow_html=True)
     st.markdown('<h2 class="section-header">Hybrid 🔀</h2>', unsafe_allow_html=True)
     st.markdown('<p class="description-text">This method combines collaborative filtering and content-based approaches to offer more precise recommendations.</p>', unsafe_allow_html=True)
-    recommendations = dummy_recommendations.get(selected_profile, [])[:num_recommendations]
-    if recommendations:
-        for title, summary in recommendations:
+    recs = dummy_recommendations.get(selected_profile, [])[:num_recommendations]
+    if recs:
+        for title, summary in recs:
             st.markdown(f"""
                 <div class="article-card">
                     <h3 class="article-title">{title}</h3>
@@ -316,53 +316,117 @@ with tabs[3]:
     st.markdown('<div class="tab-content">', unsafe_allow_html=True)
     st.markdown('<h2 class="section-header">Chatbot Recommender 🤖</h2>', unsafe_allow_html=True)
     st.markdown('<p class="description-text">Interact with our chatbot to get personalized recommendations based on your interests.</p>', unsafe_allow_html=True)
-    
-    # Display existing chat messages
-    for msg in st.session_state.chat_history:
+
+    # Display conversation so far
+    for msg in st.session_state["chat_history"]:
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
-    
-    # Stage-based logic
-    if st.session_state["chat_stage"] == 0:
-        user_input = st.chat_input("What type of news interests you?")
-        if user_input:
-            st.session_state.chat_history.append({"role": "user", "content": user_input})
-            profile = map_input_to_profile(user_input)
-            if profile is None:
-                st.session_state.chat_history.append({
-                    "role": "assistant", 
-                    "content": "I didn't quite understand that. Please mention one of these topics: Tech, Sports, Politics, or Movies."
-                })
-            else:
-                st.session_state["chat_profile"] = profile
-                st.session_state.chat_history.append({
-                    "role": "assistant", 
-                    "content": f"Great! You've chosen **{profile}**. Based on that, I recommend the following articles:"
-                })
-                st.session_state["chat_stage"] = 1
-            safe_rerun()
 
-    elif st.session_state["chat_stage"] == 1:
-        profile = st.session_state["chat_profile"]
-        recs = dummy_recommendations.get(profile, [])
-        if recs:
-            rec_list = "\n".join([f"- [{title}](#)" for title, _ in recs[:3]])
-            explanation = (
-                f"Based on your interest in **{profile}**, here are some articles we recommend:\n\n"
-                f"{rec_list}\n\n"
-                "These recommendations were chosen because they cover the latest trends and insights in your area of interest."
-            )
-        else:
-            explanation = "Sorry, no recommendations are available for your profile at the moment."
-        
-        st.session_state.chat_history.append({"role": "assistant", "content": explanation})
-        with st.chat_message("assistant"):
-            st.markdown(explanation)
-        
-        if st.button("Close Chat", key="close_chat_final"):
-            st.session_state["chat_stage"] = -1
-            safe_rerun()
-    
+    # If conversation ended (stage = -1), do nothing
+    if st.session_state["chat_stage"] == -1:
+        st.markdown("**The conversation has ended.** You can refresh the page to start again.")
+    else:
+        # Single chat input each time
+        user_input = st.chat_input("Type your message here and press Enter...")
+        if user_input:
+            # Append the user's message
+            st.session_state["chat_history"].append({"role": "user", "content": user_input})
+
+            # Stage-based logic
+            if st.session_state["chat_stage"] == 0:
+                # We are asking the user about their interest
+                profile = map_input_to_profile(user_input)
+                if profile is None:
+                    # We didn't parse a known profile
+                    st.session_state["chat_history"].append({
+                        "role": "assistant",
+                        "content": (
+                            "I didn't quite understand that. Please mention Tech, Sports, Politics, or Movies."
+                        )
+                    })
+                else:
+                    # We found a valid profile
+                    st.session_state["chat_profile"] = profile
+                    st.session_state["chat_history"].append({
+                        "role": "assistant",
+                        "content": (
+                            f"Great! You've chosen **{profile}**. Let me fetch some recommendations for you. "
+                            "Would you like to see them now? (Type 'yes' or 'refine' or 'end')"
+                        )
+                    })
+                    st.session_state["chat_stage"] = 1
+
+            elif st.session_state["chat_stage"] == 1:
+                # We have a profile, but we're asking user if they want to see recs, refine, or end
+                lower_inp = user_input.lower()
+                if "refine" in lower_inp:
+                    # Go back to stage 0
+                    st.session_state["chat_history"].append({
+                        "role": "assistant",
+                        "content": "Okay, let's refine your interest. Please tell me again: Tech, Sports, Politics, or Movies?"
+                    })
+                    st.session_state["chat_stage"] = 0
+                elif "end" in lower_inp:
+                    # End conversation
+                    st.session_state["chat_history"].append({
+                        "role": "assistant",
+                        "content": "No problem! The conversation has ended. Have a great day!"
+                    })
+                    st.session_state["chat_stage"] = -1
+                elif "yes" in lower_inp or "show" in lower_inp:
+                    # Show recs
+                    profile = st.session_state["chat_profile"]
+                    recs = dummy_recommendations.get(profile, [])
+                    if recs:
+                        # Show top 3 recs
+                        top_recs = recs[:3]
+                        bullet_list = "\n".join([f"- [{title}](#)" for title, _ in top_recs])
+                        explanation = (
+                            f"Based on your interest in **{profile}**, here are a few articles:\n\n"
+                            f"{bullet_list}\n\n"
+                            "These recommendations are chosen because they cover the latest trends in your area."
+                        )
+                    else:
+                        explanation = (
+                            "Sorry, I don't have any recommendations for that profile at the moment."
+                        )
+                    st.session_state["chat_history"].append({"role": "assistant", "content": explanation})
+                    # After showing recs, let's ask if they'd like to refine or end
+                    st.session_state["chat_history"].append({
+                        "role": "assistant",
+                        "content": "Would you like to refine your interest or end the conversation? (Type 'refine' or 'end')"
+                    })
+                    st.session_state["chat_stage"] = 2
+                else:
+                    # Did not understand
+                    st.session_state["chat_history"].append({
+                        "role": "assistant",
+                        "content": "I didn't catch that. Please type 'yes', 'refine', or 'end'."
+                    })
+
+            elif st.session_state["chat_stage"] == 2:
+                # We showed the recs. Now user can refine or end
+                lower_inp = user_input.lower()
+                if "refine" in lower_inp:
+                    # Return to stage 0
+                    st.session_state["chat_history"].append({
+                        "role": "assistant",
+                        "content": "Alright, let's refine your interest. Which topic do you prefer: Tech, Sports, Politics, or Movies?"
+                    })
+                    st.session_state["chat_stage"] = 0
+                elif "end" in lower_inp:
+                    st.session_state["chat_history"].append({
+                        "role": "assistant",
+                        "content": "Thanks for chatting! The conversation has ended. Have a great day!"
+                    })
+                    st.session_state["chat_stage"] = -1
+                else:
+                    # Unknown input
+                    st.session_state["chat_history"].append({
+                        "role": "assistant",
+                        "content": "Please type 'refine' or 'end'."
+                    })
+
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ---------------------------
