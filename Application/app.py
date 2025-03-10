@@ -5,16 +5,16 @@ import openai
 # Helper: Safe Rerun Function
 # -------------------------------
 def safe_rerun():
-    """Attempts to rerun the app. If st.experimental_rerun() is not available,
-    it forces a rerun by resetting the query parameters."""
-    try:
-        st.experimental_rerun()
-    except Exception:
-        params = st.experimental_get_query_params()
-        st.experimental_set_query_params(**params)
+    """
+    Forces a re-run of the app by reading and re-setting
+    the existing query parameters. This avoids using any
+    experimental_* methods that may be deprecated.
+    """
+    params = st.query_params()
+    st.set_query_params(**params)
 
 # =====================================
-# SET UP OPENAI API (via st.secrets)
+# SET UP OPENAI API (Securely via st.secrets)
 # =====================================
 if "OPENAI_API_KEY" not in st.secrets:
     st.error("Please add your OpenAI API key to the Streamlit advanced settings (st.secrets).")
@@ -29,14 +29,18 @@ if "chat_history" not in st.session_state:
     st.session_state["chat_history"] = []
     st.session_state.chat_history.append({
         "role": "assistant", 
-        "content": "Hello, I'm ChatNews 🤖! I'm here to help you get the best news recommendations. To start, what type of news interests you the most? (e.g., Tech, Sports, Politics, or Movies)"
+        "content": (
+            "Hello, I'm ChatNews 🤖! I'm here to help you get the best news recommendations. "
+            "To start, what type of news interests you the most? (e.g., Tech, Sports, Politics, or Movies)"
+        )
     })
+
 if "chat_stage" not in st.session_state:
     st.session_state["chat_stage"] = 0  # 0: ask for interest; 1: provide recommendations
 if "chat_profile" not in st.session_state:
     st.session_state["chat_profile"] = None
 
-# Helper: Map user input to profile
+# Helper: Map user input to a profile
 def map_input_to_profile(user_input: str):
     txt = user_input.lower()
     if "tech" in txt or "computer" in txt:
@@ -50,7 +54,7 @@ def map_input_to_profile(user_input: str):
     else:
         return None
 
-# Dummy recommendations used both in chatbot and in the static tabs
+# Dummy recommendations
 dummy_recommendations = {
     "Tech Enthusiast 💻": [
         ("AI Revolutionizes the World 🤖", "A breakthrough in AI is transforming technology."),
@@ -75,7 +79,7 @@ dummy_recommendations = {
 }
 
 # -----------------------------------
-# PAGE CONFIGURATION & GLOBAL STYLING
+# PAGE CONFIG & GLOBAL STYLING
 # -----------------------------------
 st.set_page_config(
     page_title="SokoNews - News Recommender",
@@ -212,7 +216,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Optional: Top-right logo
+# Optional: top-right logo
 st.markdown("""
     <div class="top-right-logo">
         <img src="logo.jpg" width="100">
@@ -250,7 +254,7 @@ with col3:
 st.markdown('</div>', unsafe_allow_html=True)
 
 # ---------------------------
-# TAB LAYOUT: Four Tabs
+# TABS
 # ---------------------------
 tabs = st.tabs(["Collaborative Filtering", "Content-Based", "Hybrid", "Chatbot Recommender"])
 
@@ -319,8 +323,8 @@ with tabs[3]:
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
     
-    # Sequential conversation logic for chatbot
-    if st.session_state.chat_stage == 0:
+    # Stage-based logic
+    if st.session_state["chat_stage"] == 0:
         user_input = st.chat_input("What type of news interests you?")
         if user_input:
             st.session_state.chat_history.append({"role": "user", "content": user_input})
@@ -336,29 +340,31 @@ with tabs[3]:
                     "role": "assistant", 
                     "content": f"Great! You've chosen **{profile}**. Based on that, I recommend the following articles:"
                 })
-                st.session_state.chat_stage = 1
+                st.session_state["chat_stage"] = 1
             safe_rerun()
-    elif st.session_state.chat_stage == 1:
-        profile = st.session_state.chat_profile
+    elif st.session_state["chat_stage"] == 1:
+        profile = st.session_state["chat_profile"]
         recs = dummy_recommendations.get(profile, [])
         if recs:
             rec_list = "\n".join([f"- [{title}](#)" for title, _ in recs[:3]])
-            explanation = (f"Based on your interest in **{profile}**, here are some articles we recommend:\n\n"
-                           f"{rec_list}\n\n"
-                           "These recommendations were chosen because they cover the latest trends and insights in your area of interest.")
+            explanation = (
+                f"Based on your interest in **{profile}**, here are some articles we recommend:\n\n"
+                f"{rec_list}\n\n"
+                "These recommendations were chosen because they cover the latest trends and insights in your area of interest."
+            )
         else:
             explanation = "Sorry, no recommendations are available for your profile at the moment."
+        
         st.session_state.chat_history.append({"role": "assistant", "content": explanation})
         with st.chat_message("assistant"):
             st.markdown(explanation)
+        
         if st.button("Close Chat", key="close_chat_final"):
-            st.session_state.chat_stage = -1
+            st.session_state["chat_stage"] = -1
             safe_rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ---------------------------
 # Footer
-# ---------------------------
 st.markdown("""
     <div class="footer">
         <p>© 2025 SokoNews - Developed for Microsoft Capstone Project</p>
