@@ -22,7 +22,6 @@ if "chat_profile" not in st.session_state:
     st.session_state["chat_profile"] = None
 if "chat_history" not in st.session_state:
     st.session_state["chat_history"] = []
-    # Initial chatbot message (chatbot initiates conversation)
     st.session_state.chat_history.append({
         "role": "assistant", 
         "content": "Hello, I'm ChatNews 🤖! I'm here to help you get the best news recommendations. To start, what type of news interests you the most? (e.g., Tech, Sports, Politics, or Movies)"
@@ -109,7 +108,7 @@ if st.session_state.chat_visible and st.session_state.chat_stage != -1:
             if st.button("X", key="close_chat"):
                 st.session_state.chat_visible = False
                 st.experimental_rerun()
-        # Display conversation history using Streamlit's chat functions
+        # Display conversation history using st.chat_message (Streamlit's chat functions)
         for msg in st.session_state.chat_history:
             with st.chat_message(msg["role"]):
                 st.markdown(msg["content"])
@@ -155,8 +154,6 @@ if st.session_state.chat_visible and st.session_state.chat_stage != -1:
 # ===============================
 # REST OF THE SOKONEWS WEB APP CODE
 # ===============================
-# (The following is your existing SokoNews app code.)
-
 # Custom CSS for a light, Microsoft-inspired UI with clean, clear colors
 st.markdown("""
     <style>
