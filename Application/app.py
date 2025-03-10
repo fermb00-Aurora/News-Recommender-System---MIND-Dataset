@@ -5,7 +5,6 @@ import base64
 # ============================
 # SET UP OPENAI API (Securely)
 # ============================
-# Use the API key from st.secrets (ensure you have added it in .streamlit/secrets.toml)
 if "OPENAI_API_KEY" not in st.secrets:
     st.error("Please add your OpenAI API key to st.secrets.")
     st.stop()
@@ -109,9 +108,9 @@ if st.session_state.chat_visible and st.session_state.chat_stage != -1:
         with col_header2:
             if st.button("X", key="close_chat"):
                 st.session_state.chat_visible = False
-                st.experimental_rerun()  # Refresh the page to hide the chat modal
+                st.experimental_rerun()  # This rerun is acceptable here to update the modal visibility
 
-        # Display conversation history using st.chat_message (available in Streamlit versions supporting chat)
+        # Display conversation history using st.chat_message (Streamlit's chat functions)
         for msg in st.session_state.chat_history:
             with st.chat_message(msg["role"]):
                 st.markdown(msg["content"])
@@ -141,7 +140,6 @@ if st.session_state.chat_visible and st.session_state.chat_stage != -1:
             profile = st.session_state.chat_profile
             recs = dummy_recommendations.get(profile, [])
             if recs:
-                # Take at most 3 recommendations
                 rec_list = "\n".join([f"- [{title}](#)" for title, _ in recs[:3]])
                 explanation = (f"Based on your interest in **{profile}**, here are some articles we recommend:\n\n"
                                f"{rec_list}\n\n"
@@ -156,9 +154,10 @@ if st.session_state.chat_visible and st.session_state.chat_stage != -1:
                 st.experimental_rerun()
         st.markdown("</div>", unsafe_allow_html=True)
 
-# =====================================
+# ===============================
 # REST OF THE SOKONEWS WEB APP CODE
-# =====================================
+# ===============================
+# (Below is your existing web app code.)
 
 # Custom CSS for a light, Microsoft-inspired UI with clean, clear colors
 st.markdown("""
