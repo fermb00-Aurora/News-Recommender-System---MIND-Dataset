@@ -5,7 +5,6 @@ import base64
 # =====================================
 # SET UP OPENAI API (Securely via st.secrets)
 # =====================================
-# In Streamlit Cloud, set your API key in the advanced settings (or in .streamlit/secrets.toml)
 if "OPENAI_API_KEY" not in st.secrets:
     st.error("Please add your OpenAI API key to the Streamlit advanced settings (st.secrets).")
     st.stop()
@@ -23,6 +22,7 @@ if "chat_profile" not in st.session_state:
     st.session_state["chat_profile"] = None
 if "chat_history" not in st.session_state:
     st.session_state["chat_history"] = []
+    # Initial chatbot message (chatbot initiates conversation)
     st.session_state.chat_history.append({
         "role": "assistant", 
         "content": "Hello, I'm ChatNews 🤖! I'm here to help you get the best news recommendations. To start, what type of news interests you the most? (e.g., Tech, Sports, Politics, or Movies)"
