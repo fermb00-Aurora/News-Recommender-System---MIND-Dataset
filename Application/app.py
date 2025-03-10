@@ -84,16 +84,16 @@ st.set_page_config(
 
 st.markdown("""
     <style>
-        /* Overall Background & Font */
+        /* Overall Egg White Background & Font */
         body {
-            background-color: #FFFFFF !important;
+            background-color: #F8F3E9 !important; /* Egg white */
             font-family: 'Segoe UI', Arial, sans-serif;
             color: #333333;
         }
         .stApp {
             max-width: 1100px;
             margin: 0 auto;
-            padding: 30px;
+            padding: 20px; /* Reduced padding for a cleaner layout */
         }
         /* Top-right Logo */
         .top-right-logo {
@@ -105,7 +105,7 @@ st.markdown("""
         /* Title and Subtitle */
         .main-title {
             color: #0078D4;
-            font-size: 2.4em; /* Reduced from 2.6em for better balance */
+            font-size: 2.4em;
             font-weight: 700;
             margin: 0;
         }
@@ -113,17 +113,17 @@ st.markdown("""
             color: #555555;
             font-size: 1.05em;
             font-weight: 400;
-            margin-top: 8px;
+            margin-top: 6px; /* Slightly reduced margin */
         }
         /* Control Section */
         .control-section {
             background-color: #FAFAFA;
-            padding: 20px;
+            padding: 15px; /* Slightly reduced padding */
             border-radius: 8px;
             border: 1px solid #E0E0E0;
-            margin-bottom: 30px; /* More spacing below */
+            margin-bottom: 20px;
             display: flex;
-            gap: 20px;
+            gap: 15px;
             align-items: center;
         }
         .control-label {
@@ -134,13 +134,13 @@ st.markdown("""
         }
         /* Tabs */
         .stTabs {
-            margin-bottom: 30px; /* More spacing below tabs */
+            margin-bottom: 20px; /* Less bottom spacing */
         }
         .stTabs [role="tab"] {
             background-color: #F0F0F0;
             color: #0078D4;
             border-radius: 10px 10px 0 0;
-            padding: 12px 25px;
+            padding: 10px 20px;
             font-weight: 500;
             font-size: 1em;
             transition: background-color 0.3s, color 0.3s;
@@ -155,18 +155,18 @@ st.markdown("""
         }
         .tab-content {
             background-color: #FFFFFF;
-            padding: 25px;
+            padding: 20px;
             border-radius: 10px;
             border: 1px solid #E0E0E0;
-            margin-bottom: 30px; /* Additional spacing */
+            margin-bottom: 20px;
         }
         /* Article Cards */
         .article-card {
             background-color: #E6F7FF;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Lighter shadow */
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             transition: transform 0.2s, box-shadow 0.2s;
             border-left: 4px solid #0078D4;
         }
@@ -176,9 +176,9 @@ st.markdown("""
         }
         .article-title {
             color: #0078D4;
-            font-size: 1.2em;
+            font-size: 1.15em;
             font-weight: 600;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         .article-summary {
             color: #333333;
@@ -189,7 +189,7 @@ st.markdown("""
             color: #666666;
             font-size: 0.95em;
             font-style: italic;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             line-height: 1.6;
         }
         /* Footer */
@@ -197,8 +197,8 @@ st.markdown("""
             text-align: center;
             color: #666666;
             font-size: 0.85em;
-            margin-top: 40px;
-            padding: 20px 0;
+            margin-top: 30px;
+            padding: 15px 0;
             border-top: 1px solid #E0E0E0;
         }
         .footer a {
@@ -211,14 +211,14 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Adjust path if needed. 
-# If "logo.jpg" is in the same folder as this app.py, remove "Application/" from the path.
+# If logo.jpg is in the same folder, remove "Application/" from src
 st.markdown("""
     <div class="top-right-logo">
         <img src="Application/logo.jpg" width="90">
     </div>
 """, unsafe_allow_html=True)
 
+# Title & Subtitle
 st.markdown('<h1 class="main-title">SokoNews 🚀</h1>', unsafe_allow_html=True)
 st.markdown('<p class="subtitle">Discover personalized news recommendations using Microsoft technology ✨</p>', unsafe_allow_html=True)
 
@@ -250,6 +250,9 @@ with col3:
         st.info("Page refreshed!")
 st.markdown('</div>', unsafe_allow_html=True)
 
+# =========================
+# 4 TABS
+# =========================
 tabs = st.tabs(["Collaborative Filtering", "Content-Based", "Hybrid", "Chatbot Recommender"])
 
 # TAB 1: Collaborative Filtering
