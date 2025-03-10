@@ -14,9 +14,7 @@ else:
 # Initialize Chatbot Session Variables
 # =====================================
 if "chat_history" not in st.session_state:
-    # We'll store the entire conversation here, user + assistant messages
     st.session_state["chat_history"] = []
-    # The chatbot starts the conversation
     st.session_state.chat_history.append({
         "role": "assistant",
         "content": (
@@ -25,10 +23,10 @@ if "chat_history" not in st.session_state:
         )
     })
 
-# We use a "chat_stage" to track where we are in the conversation:
+# Conversation stages:
 # 0 => Asking user about interest
-# 1 => We have a valid profile, we show them recommendations
-# 2 => We ask user if they want to refine or end
+# 1 => We have a valid profile, show recommendations
+# 2 => Ask if user wants to refine or end
 # -1 => Conversation ended
 if "chat_stage" not in st.session_state:
     st.session_state["chat_stage"] = 0
@@ -61,7 +59,6 @@ dummy_recommendations = {
     ],
 }
 
-# Helper function to map user input to a known profile
 def map_input_to_profile(user_input: str):
     text = user_input.lower()
     if "tech" in text or "computer" in text:
@@ -87,36 +84,36 @@ st.set_page_config(
 
 st.markdown("""
     <style>
-        /* Overall Light Background */
+        /* Overall Background & Font */
         body {
             background-color: #FFFFFF !important;
             font-family: 'Segoe UI', Arial, sans-serif;
             color: #333333;
         }
         .stApp {
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 30px;
         }
         /* Top-right Logo */
         .top-right-logo {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 15px;
+            right: 15px;
             z-index: 1000;
         }
         /* Title and Subtitle */
         .main-title {
             color: #0078D4;
-            font-size: 2.6em;
+            font-size: 2.4em; /* Reduced from 2.6em for better balance */
             font-weight: 700;
             margin: 0;
         }
         .subtitle {
-            color: #666666;
-            font-size: 1.1em;
+            color: #555555;
+            font-size: 1.05em;
             font-weight: 400;
-            margin-top: 5px;
+            margin-top: 8px;
         }
         /* Control Section */
         .control-section {
@@ -124,7 +121,7 @@ st.markdown("""
             padding: 20px;
             border-radius: 8px;
             border: 1px solid #E0E0E0;
-            margin: 20px 0;
+            margin-bottom: 30px; /* More spacing below */
             display: flex;
             gap: 20px;
             align-items: center;
@@ -137,7 +134,7 @@ st.markdown("""
         }
         /* Tabs */
         .stTabs {
-            margin-top: 20px;
+            margin-bottom: 30px; /* More spacing below tabs */
         }
         .stTabs [role="tab"] {
             background-color: #F0F0F0;
@@ -159,37 +156,38 @@ st.markdown("""
         .tab-content {
             background-color: #FFFFFF;
             padding: 25px;
-            border-radius: 0 10px 10px 10px;
+            border-radius: 10px;
             border: 1px solid #E0E0E0;
+            margin-bottom: 30px; /* Additional spacing */
         }
         /* Article Cards */
         .article-card {
             background-color: #E6F7FF;
             padding: 20px;
             border-radius: 10px;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Lighter shadow */
             transition: transform 0.2s, box-shadow 0.2s;
             border-left: 4px solid #0078D4;
         }
         .article-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
         }
         .article-title {
             color: #0078D4;
-            font-size: 1.4em;
+            font-size: 1.2em;
             font-weight: 600;
             margin-bottom: 8px;
         }
         .article-summary {
             color: #333333;
-            font-size: 1em;
+            font-size: 0.95em;
             line-height: 1.5;
         }
         .description-text {
             color: #666666;
-            font-size: 1em;
+            font-size: 0.95em;
             font-style: italic;
             margin-bottom: 25px;
             line-height: 1.6;
@@ -198,10 +196,10 @@ st.markdown("""
         .footer {
             text-align: center;
             color: #666666;
-            font-size: 0.9em;
+            font-size: 0.85em;
             margin-top: 40px;
             padding: 20px 0;
-            border-top: 1px solid #0078D4;
+            border-top: 1px solid #E0E0E0;
         }
         .footer a {
             color: #0078D4;
@@ -213,14 +211,14 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Optional top-right logo
+# Adjust path if needed. 
+# If "logo.jpg" is in the same folder as this app.py, remove "Application/" from the path.
 st.markdown("""
     <div class="top-right-logo">
-        <img src="Application/logo.jpg" width="100">
+        <img src="Application/logo.jpg" width="90">
     </div>
 """, unsafe_allow_html=True)
 
-# Title & Subtitle
 st.markdown('<h1 class="main-title">SokoNews 🚀</h1>', unsafe_allow_html=True)
 st.markdown('<p class="subtitle">Discover personalized news recommendations using Microsoft technology ✨</p>', unsafe_allow_html=True)
 
@@ -252,9 +250,6 @@ with col3:
         st.info("Page refreshed!")
 st.markdown('</div>', unsafe_allow_html=True)
 
-# =========================
-# 4 TABS
-# =========================
 tabs = st.tabs(["Collaborative Filtering", "Content-Based", "Hybrid", "Chatbot Recommender"])
 
 # TAB 1: Collaborative Filtering
@@ -322,30 +317,24 @@ with tabs[3]:
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
 
-    # If conversation ended (stage = -1), do nothing
+    # If conversation ended
     if st.session_state["chat_stage"] == -1:
         st.markdown("**The conversation has ended.** You can refresh the page to start again.")
     else:
-        # Single chat input each time
         user_input = st.chat_input("Type your message here and press Enter...")
         if user_input:
-            # Append the user's message
+            # Append user message
             st.session_state["chat_history"].append({"role": "user", "content": user_input})
 
             # Stage-based logic
             if st.session_state["chat_stage"] == 0:
-                # We are asking the user about their interest
                 profile = map_input_to_profile(user_input)
                 if profile is None:
-                    # We didn't parse a known profile
                     st.session_state["chat_history"].append({
                         "role": "assistant",
-                        "content": (
-                            "I didn't quite understand that. Please mention Tech, Sports, Politics, or Movies."
-                        )
+                        "content": "I didn't quite understand that. Please mention Tech, Sports, Politics, or Movies."
                     })
                 else:
-                    # We found a valid profile
                     st.session_state["chat_profile"] = profile
                     st.session_state["chat_history"].append({
                         "role": "assistant",
@@ -357,28 +346,23 @@ with tabs[3]:
                     st.session_state["chat_stage"] = 1
 
             elif st.session_state["chat_stage"] == 1:
-                # We have a profile, but we're asking user if they want to see recs, refine, or end
                 lower_inp = user_input.lower()
                 if "refine" in lower_inp:
-                    # Go back to stage 0
                     st.session_state["chat_history"].append({
                         "role": "assistant",
                         "content": "Okay, let's refine your interest. Please tell me again: Tech, Sports, Politics, or Movies?"
                     })
                     st.session_state["chat_stage"] = 0
                 elif "end" in lower_inp:
-                    # End conversation
                     st.session_state["chat_history"].append({
                         "role": "assistant",
                         "content": "No problem! The conversation has ended. Have a great day!"
                     })
                     st.session_state["chat_stage"] = -1
                 elif "yes" in lower_inp or "show" in lower_inp:
-                    # Show recs
                     profile = st.session_state["chat_profile"]
                     recs = dummy_recommendations.get(profile, [])
                     if recs:
-                        # Show top 3 recs
                         top_recs = recs[:3]
                         bullet_list = "\n".join([f"- [{title}](#)" for title, _ in top_recs])
                         explanation = (
@@ -387,28 +371,22 @@ with tabs[3]:
                             "These recommendations are chosen because they cover the latest trends in your area."
                         )
                     else:
-                        explanation = (
-                            "Sorry, I don't have any recommendations for that profile at the moment."
-                        )
+                        explanation = "Sorry, I don't have any recommendations for that profile at the moment."
                     st.session_state["chat_history"].append({"role": "assistant", "content": explanation})
-                    # After showing recs, let's ask if they'd like to refine or end
                     st.session_state["chat_history"].append({
                         "role": "assistant",
                         "content": "Would you like to refine your interest or end the conversation? (Type 'refine' or 'end')"
                     })
                     st.session_state["chat_stage"] = 2
                 else:
-                    # Did not understand
                     st.session_state["chat_history"].append({
                         "role": "assistant",
                         "content": "I didn't catch that. Please type 'yes', 'refine', or 'end'."
                     })
 
             elif st.session_state["chat_stage"] == 2:
-                # We showed the recs. Now user can refine or end
                 lower_inp = user_input.lower()
                 if "refine" in lower_inp:
-                    # Return to stage 0
                     st.session_state["chat_history"].append({
                         "role": "assistant",
                         "content": "Alright, let's refine your interest. Which topic do you prefer: Tech, Sports, Politics, or Movies?"
@@ -421,7 +399,6 @@ with tabs[3]:
                     })
                     st.session_state["chat_stage"] = -1
                 else:
-                    # Unknown input
                     st.session_state["chat_history"].append({
                         "role": "assistant",
                         "content": "Please type 'refine' or 'end'."
@@ -435,6 +412,6 @@ with tabs[3]:
 st.markdown("""
     <div class="footer">
         <p>© 2025 SokoNews - Developed for Microsoft Capstone Project</p>
-        <p>Explore the MIND dataset <a href="https://msnews.github.io/" target="_blank">here</a> 📊</p>
+        <p>Explore the <a href="https://msnews.github.io/" target="_blank">MIND dataset</a> 📊</p>
     </div>
 """, unsafe_allow_html=True)
