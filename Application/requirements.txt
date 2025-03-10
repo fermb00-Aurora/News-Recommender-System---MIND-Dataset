@@ -1,2 +1,6 @@
-streamlit>=1.43.1
-openai>=0.27.0
+streamlit
+openai
+pandas
+numpy
+python-dateutil==2.9.0.post0
+
