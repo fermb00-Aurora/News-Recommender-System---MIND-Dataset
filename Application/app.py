@@ -1,8 +1,20 @@
 import streamlit as st
 import openai
 
+# -------------------------------
+# Helper: Safe Rerun Function
+# -------------------------------
+def safe_rerun():
+    """Attempts to rerun the app. If st.experimental_rerun() is not available,
+    it forces a rerun by resetting the query parameters."""
+    try:
+        st.experimental_rerun()
+    except Exception:
+        params = st.experimental_get_query_params()
+        st.experimental_set_query_params(**params)
+
 # =====================================
-# SET UP OPENAI API (Securely via st.secrets)
+# SET UP OPENAI API (via st.secrets)
 # =====================================
 if "OPENAI_API_KEY" not in st.secrets:
     st.error("Please add your OpenAI API key to the Streamlit advanced settings (st.secrets).")
@@ -13,34 +25,32 @@ else:
 # =====================================
 # Initialize Chatbot Session Variables
 # =====================================
-if "chat_visible" not in st.session_state:
-    st.session_state["chat_visible"] = True
-if "chat_stage" not in st.session_state:
-    st.session_state["chat_stage"] = 0  # 0: Ask for news interest; 1: Provide recommendations; -1: Chat closed
-if "chat_profile" not in st.session_state:
-    st.session_state["chat_profile"] = None
 if "chat_history" not in st.session_state:
     st.session_state["chat_history"] = []
     st.session_state.chat_history.append({
         "role": "assistant", 
         "content": "Hello, I'm ChatNews 🤖! I'm here to help you get the best news recommendations. To start, what type of news interests you the most? (e.g., Tech, Sports, Politics, or Movies)"
     })
+if "chat_stage" not in st.session_state:
+    st.session_state["chat_stage"] = 0  # 0: ask for interest; 1: provide recommendations
+if "chat_profile" not in st.session_state:
+    st.session_state["chat_profile"] = None
 
-# Helper function to map user input to a profile
-def map_input_to_profile(user_input):
-    user_input_lower = user_input.lower()
-    if "tech" in user_input_lower or "computer" in user_input_lower:
+# Helper: Map user input to profile
+def map_input_to_profile(user_input: str):
+    txt = user_input.lower()
+    if "tech" in txt or "computer" in txt:
         return "Tech Enthusiast 💻"
-    elif "sport" in user_input_lower or "game" in user_input_lower:
+    elif "sport" in txt or "game" in txt:
         return "Sports Fan ⚽"
-    elif "politic" in user_input_lower or "government" in user_input_lower:
+    elif "politic" in txt or "government" in txt:
         return "Political Enthusiast 🏛️"
-    elif "movie" in user_input_lower or "film" in user_input_lower:
+    elif "movie" in txt or "film" in txt:
         return "Movie Buff 🎬"
     else:
         return None
 
-# Dummy recommendations for chatbot explanation
+# Dummy recommendations used both in chatbot and in the static tabs
 dummy_recommendations = {
     "Tech Enthusiast 💻": [
         ("AI Revolutionizes the World 🤖", "A breakthrough in AI is transforming technology."),
@@ -64,14 +74,19 @@ dummy_recommendations = {
     ]
 }
 
-# =====================================
-# MAIN APP: TITLE, CONTROLS, AND TABS
-# =====================================
+# -----------------------------------
+# PAGE CONFIGURATION & GLOBAL STYLING
+# -----------------------------------
+st.set_page_config(
+    page_title="SokoNews - News Recommender",
+    page_icon="📰",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
 
-# Custom CSS for a light, Microsoft-inspired UI with clean, clear colors
 st.markdown("""
     <style>
-        /* Overall Light Background */
+        /* Overall Light Background & Font */
         body {
             background-color: #FFFFFF !important;
             font-family: 'Segoe UI', Arial, sans-serif;
@@ -119,18 +134,6 @@ st.markdown("""
             font-weight: 500;
             margin-bottom: 5px;
         }
-        /* Widgets */
-        .stSelectbox > div > div > div {
-            background-color: #FFFFFF;
-            border: 1px solid #0078D4;
-            border-radius: 5px;
-            padding: 5px;
-            font-size: 1em;
-            color: #333333;
-        }
-        .stSlider > div > div > div > div {
-            background-color: #0078D4;
-        }
         /* Tabs */
         .stTabs {
             margin-top: 20px;
@@ -158,7 +161,7 @@ st.markdown("""
             border-radius: 0 10px 10px 10px;
             border: 1px solid #E0E0E0;
         }
-        /* Article Cards (Light Blue) */
+        /* Article Cards */
         .article-card {
             background-color: #E6F7FF;
             padding: 20px;
@@ -209,18 +212,18 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Top-right logo (if desired)
+# Optional: Top-right logo
 st.markdown("""
     <div class="top-right-logo">
         <img src="logo.jpg" width="100">
     </div>
 """, unsafe_allow_html=True)
 
-# Title and Subtitle
+# Title & Subtitle
 st.markdown('<h1 class="main-title">SokoNews 🚀</h1>', unsafe_allow_html=True)
 st.markdown('<p class="subtitle">Discover personalized news recommendations using Microsoft technology ✨</p>', unsafe_allow_html=True)
 
-# Control Section for user profile & number of recommendations
+# Control Section
 st.markdown('<div class="control-section">', unsafe_allow_html=True)
 col1, col2, col3 = st.columns([2, 2, 1])
 with col1:
@@ -246,15 +249,17 @@ with col3:
         st.info("Page refreshed!")
 st.markdown('</div>', unsafe_allow_html=True)
 
-# Create four tabs: the three existing ones plus a new "Chatbot Recommender" tab.
+# ---------------------------
+# TAB LAYOUT: Four Tabs
+# ---------------------------
 tabs = st.tabs(["Collaborative Filtering", "Content-Based", "Hybrid", "Chatbot Recommender"])
 
-# ------------------ Collaborative Filtering Tab ------------------
+# TAB 1: Collaborative Filtering
 with tabs[0]:
     st.markdown('<div class="tab-content">', unsafe_allow_html=True)
     st.markdown('<h2 class="section-header">Collaborative Filtering ⚙️</h2>', unsafe_allow_html=True)
     st.markdown('<p class="description-text">This method analyzes the behavior of users with similar interests to recommend relevant news articles.</p>', unsafe_allow_html=True)
-    recommendations = dummy_recommendations.get(selected_profile, [])
+    recommendations = dummy_recommendations.get(selected_profile, [])[:num_recommendations]
     if recommendations:
         for title, summary in recommendations:
             st.markdown(f"""
@@ -267,12 +272,12 @@ with tabs[0]:
         st.markdown('<p class="description-text">No recommendations available for this profile at the moment.</p>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ------------------ Content-Based Tab ------------------
+# TAB 2: Content-Based
 with tabs[1]:
     st.markdown('<div class="tab-content">', unsafe_allow_html=True)
     st.markdown('<h2 class="section-header">Content-Based 📄</h2>', unsafe_allow_html=True)
     st.markdown('<p class="description-text">This method recommends news based on the content of articles you have previously read, identifying patterns in your preferences.</p>', unsafe_allow_html=True)
-    recommendations = dummy_recommendations.get(selected_profile, [])
+    recommendations = dummy_recommendations.get(selected_profile, [])[:num_recommendations]
     if recommendations:
         for title, summary in recommendations:
             st.markdown(f"""
@@ -285,12 +290,12 @@ with tabs[1]:
         st.markdown('<p class="description-text">No recommendations available for this profile at the moment.</p>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ------------------ Hybrid Tab ------------------
+# TAB 3: Hybrid
 with tabs[2]:
     st.markdown('<div class="tab-content">', unsafe_allow_html=True)
     st.markdown('<h2 class="section-header">Hybrid 🔀</h2>', unsafe_allow_html=True)
     st.markdown('<p class="description-text">This method combines collaborative filtering and content-based approaches to offer more precise recommendations.</p>', unsafe_allow_html=True)
-    recommendations = dummy_recommendations.get(selected_profile, [])
+    recommendations = dummy_recommendations.get(selected_profile, [])[:num_recommendations]
     if recommendations:
         for title, summary in recommendations:
             st.markdown(f"""
@@ -303,18 +308,18 @@ with tabs[2]:
         st.markdown('<p class="description-text">No recommendations available for this profile at the moment.</p>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ------------------ Chatbot Recommender Tab ------------------
+# TAB 4: Chatbot Recommender
 with tabs[3]:
     st.markdown('<div class="tab-content">', unsafe_allow_html=True)
     st.markdown('<h2 class="section-header">Chatbot Recommender 🤖</h2>', unsafe_allow_html=True)
     st.markdown('<p class="description-text">Interact with our chatbot to get personalized recommendations based on your interests.</p>', unsafe_allow_html=True)
     
-    # Display conversation history using st.chat_message
+    # Display existing chat messages
     for msg in st.session_state.chat_history:
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
     
-    # Sequential conversation logic within the Chatbot tab
+    # Sequential conversation logic for chatbot
     if st.session_state.chat_stage == 0:
         user_input = st.chat_input("What type of news interests you?")
         if user_input:
@@ -332,7 +337,7 @@ with tabs[3]:
                     "content": f"Great! You've chosen **{profile}**. Based on that, I recommend the following articles:"
                 })
                 st.session_state.chat_stage = 1
-            st.experimental_rerun()
+            safe_rerun()
     elif st.session_state.chat_stage == 1:
         profile = st.session_state.chat_profile
         recs = dummy_recommendations.get(profile, [])
@@ -348,10 +353,12 @@ with tabs[3]:
             st.markdown(explanation)
         if st.button("Close Chat", key="close_chat_final"):
             st.session_state.chat_stage = -1
-            st.experimental_rerun()
+            safe_rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ------------------ Footer ------------------
+# ---------------------------
+# Footer
+# ---------------------------
 st.markdown("""
     <div class="footer">
         <p>© 2025 SokoNews - Developed for Microsoft Capstone Project</p>
