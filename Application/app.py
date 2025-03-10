@@ -2,11 +2,12 @@ import streamlit as st
 import openai
 import base64
 
-# ============================
-# SET UP OPENAI API (Securely)
-# ============================
+# =====================================
+# SET UP OPENAI API (Securely via st.secrets)
+# =====================================
+# In Streamlit Cloud, set your API key in the advanced settings (or in .streamlit/secrets.toml)
 if "OPENAI_API_KEY" not in st.secrets:
-    st.error("Please add your OpenAI API key to st.secrets.")
+    st.error("Please add your OpenAI API key to the Streamlit advanced settings (st.secrets).")
     st.stop()
 else:
     openai.api_key = st.secrets["OPENAI_API_KEY"]
@@ -22,7 +23,6 @@ if "chat_profile" not in st.session_state:
     st.session_state["chat_profile"] = None
 if "chat_history" not in st.session_state:
     st.session_state["chat_history"] = []
-    # Initial chatbot message (chatbot initiates conversation)
     st.session_state.chat_history.append({
         "role": "assistant", 
         "content": "Hello, I'm ChatNews 🤖! I'm here to help you get the best news recommendations. To start, what type of news interests you the most? (e.g., Tech, Sports, Politics, or Movies)"
@@ -108,13 +108,11 @@ if st.session_state.chat_visible and st.session_state.chat_stage != -1:
         with col_header2:
             if st.button("X", key="close_chat"):
                 st.session_state.chat_visible = False
-                st.experimental_rerun()  # This rerun is acceptable here to update the modal visibility
-
-        # Display conversation history using st.chat_message (Streamlit's chat functions)
+                st.experimental_rerun()
+        # Display conversation history using Streamlit's chat functions
         for msg in st.session_state.chat_history:
             with st.chat_message(msg["role"]):
                 st.markdown(msg["content"])
-
         # Sequential conversation logic:
         if st.session_state.chat_stage == 0:
             # Stage 0: Ask for user's news interest
@@ -150,14 +148,14 @@ if st.session_state.chat_visible and st.session_state.chat_stage != -1:
             with st.chat_message("assistant"):
                 st.markdown(explanation)
             if st.button("Close Chat", key="close_chat_final"):
-                st.session_state.chat_stage = -1  # Mark chat as closed
+                st.session_state.chat_stage = -1
                 st.experimental_rerun()
         st.markdown("</div>", unsafe_allow_html=True)
 
 # ===============================
 # REST OF THE SOKONEWS WEB APP CODE
 # ===============================
-# (Below is your existing web app code.)
+# (The following is your existing SokoNews app code.)
 
 # Custom CSS for a light, Microsoft-inspired UI with clean, clear colors
 st.markdown("""
